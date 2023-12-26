@@ -35,3 +35,27 @@ export async function POST(request: NextRequest) {
         return NextResponse.json('Error creating user', { status: 500 });
     }
 }
+
+export async function GET(request: NextRequest) {
+    try {
+        const searchParams = request.nextUrl.searchParams;
+        const id = Number(searchParams.get('id'));
+        if (!id) {
+            const users = await prisma.users.findMany();
+            const userResponse = users.map(({ password_hash, ...rest }) => rest);
+            return NextResponse.json(userResponse, {status: 200});
+        }
+        const existingUser = await prisma.users.findUnique({
+            where: {
+                user_id: id,
+            },
+        });
+        if (existingUser) {
+            const { password_hash: _, ...userResponse } = existingUser;
+            return NextResponse.json(userResponse, {status: 200});
+        }
+        return NextResponse.json('User with this id does not exist', { status: 400 });
+    } catch (error) {
+        return NextResponse.json('Error creating user', { status: 500 });
+    }
+}
