@@ -15,8 +15,9 @@ const handler = NextAuth({
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials, req) {
+                if (!credentials?.username || !credentials?.password) return null;
                 // Add logic here to look up the user from the credentials supplied
-                const res = await fetch(process.env.API_URL as string + "/login", {
+                const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -41,6 +42,9 @@ const handler = NextAuth({
             }
         })
     ],
+    pages: {
+        signIn: "/login"
+    },
     session: {
         strategy: "jwt",
         maxAge: 86400

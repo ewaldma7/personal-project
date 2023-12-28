@@ -2,25 +2,22 @@
 
 import { useState } from "react"
 import axios from "axios";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const validPassword = true; //NEED TO CHANGE
 
-    const registerUser = async (e: React.FormEvent) => {
+    const logIn = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-          const response = await axios.post(process.env.API_URL as string + "/users", {
-            email: email,
-            password: password
-          });
-          console.log("Success: ", response.data);
-          window.location.assign("/login")
-        } catch (error) {
-          console.error("Error: ", error);
-        }
-      };
+        const res = await signIn("credentials", {
+          username: email,
+          password: password,
+          redirect: false,
+          callbackUrl: "/"
+        });
+      }
 
     return (
       <>
@@ -37,7 +34,7 @@ export default function Login() {
           </div>
   
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6" onSubmit={registerUser}>
+            <form className="space-y-6" onSubmit={logIn}>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
