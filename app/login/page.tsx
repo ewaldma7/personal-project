@@ -14,8 +14,8 @@ export default function Login() {
         const res = await signIn("credentials", {
           username: email,
           password: password,
-          redirect: false,
-          callbackUrl: "/"
+          redirect: true,
+          callbackUrl: "/dashboard"
         });
       }
 

@@ -4,19 +4,22 @@ import Link from 'next/link'
 import React from 'react'
 import { GiBaseballGlove } from "react-icons/gi";
 import classNames from 'classnames'
-import { usePathname } from 'next/navigation'
 import LoginButton from './LoginButton';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
 
   const currentPath = usePathname();
+  const noNavPaths = ["/", "/login", "/register"]
   const links = [
     {label: 'Dashboard', href: "/dashboard"},
-    {label: 'Register', href: "/register"},
-    {label: 'Login', href: "/login"},
+    {label: 'Leaderboard', href: "/leaderboard"},
   ]
+  const pathname = usePathname();
+  const showNavbar = !noNavPaths.includes(pathname); // Check if current path is not root  
 
   return (
+    showNavbar &&
     <nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center'>
         <Link href="/"><GiBaseballGlove /></Link>
         <ul className='flex space-x-6'>

@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
-const UserPostPage = () => {
+const Dashboard = () => {
 
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
@@ -20,14 +21,16 @@ const UserPostPage = () => {
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-8 px-16 rounded-xl mb-4 md:mb-0 md:mr-8 text-xl">
           Yesterday's Answers
         </button>
+        <Link href="/leaderboard">
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-8 px-16 rounded-xl text-xl">
           View Today's Leaderboard
         </button>
+        </Link>
       </div>
       
       {/* Final button */}
       <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-8 px-16 rounded-xl text-xl">
-        Play
+        {played ? 'View Results' : 'Play'}
       </button>
     </div>
   ) : (
@@ -35,4 +38,4 @@ const UserPostPage = () => {
   );
 }
 
-export default UserPostPage
+export default Dashboard
