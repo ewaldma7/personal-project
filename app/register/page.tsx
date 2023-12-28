@@ -2,13 +2,14 @@
 
 import { useState } from "react"
 import axios from "axios";
-import Router, { useRouter } from "next/navigation";
 
 export default function Register() {
-    const router = useRouter();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirm_password, setConfirmPassword] = useState("");
+    const validPassword = (password && confirm_password && (password === confirm_password)) ? true : false;
+
     const registerUser = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -18,7 +19,7 @@ export default function Register() {
             password: password
           });
           console.log("Success: ", response.data);
-          window.location.reload();
+          window.location.assign("/login")
         } catch (error) {
           console.error("Error: ", error);
         }
@@ -54,7 +55,7 @@ export default function Register() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -97,11 +98,32 @@ export default function Register() {
                   />
                 </div>
               </div>
-  
+
+              <div>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="confirm_password" className="block text-sm font-medium leading-6 text-gray-900">
+                    Confirm Password
+                  </label>
+                </div>
+                <div className="mt-2">
+                  <input
+                    id="confirm_password"
+                    name="confirm_password"
+                    type="password"
+                    autoComplete="current-confirm_password"
+                    value={confirm_password}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              {password && confirm_password && (password === confirm_password ? <h3 style={{color: "green"}}>Passwords Match!</h3> : <h3 style={{color: "red"}} >Passwords Do Not Match!</h3>)} 
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className={(validPassword ? "bg-indigo-600 hover:bg-indigo-500  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" : "bg-indigo-300 hover:bg-indigo-300") + "flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm"}
+                  disabled={!validPassword}
                 >
                   Register
                 </button>

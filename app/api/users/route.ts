@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/prisma/client";
+import prisma from "@/app/lib/client";
 import { createUserSchema } from "@/app/validationSchemas";
 import bcrypt from 'bcrypt';
+import { verifyJwt } from "@/app/lib/jwt";
 
 async function hashPassword(password: string): Promise<string> {
     try {
@@ -37,25 +38,15 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+    const accessToken = request.headers.get("authorization");
+    if (!accessToken || !verifyJwt(accessToken)) {
+        return NextResponse.json({error: 'unauthorized'}, {status: 401});
+    }
     try {
-        const searchParams = request.nextUrl.searchParams;
-        const id = Number(searchParams.get('id'));
-        if (!id) {
-            const users = await prisma.users.findMany();
-            const userResponse = users.map(({ password_hash, ...rest }) => rest);
-            return NextResponse.json(userResponse, {status: 200});
-        }
-        const existingUser = await prisma.users.findUnique({
-            where: {
-                user_id: id,
-            },
-        });
-        if (existingUser) {
-            const { password_hash: _, ...userResponse } = existingUser;
-            return NextResponse.json(userResponse, {status: 200});
-        }
-        return NextResponse.json('User with this id does not exist', { status: 400 });
+        const users = await prisma.users.findMany();
+        const userResponse = users.map(({ password_hash, ...rest }) => rest);
+        return NextResponse.json(userResponse, {status: 200});
     } catch (error) {
-        return NextResponse.json('Error creating user', { status: 500 });
+        return NextResponse.json('Error fetching all users', { status: 500 });
     }
 }
