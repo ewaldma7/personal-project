@@ -57,9 +57,9 @@ function ResultsPage() {
                 </div>
                 <div className="flex">
                     {/* First Column */}
-                    <div className="w-1/2">{renderColumn(column1)}</div>
+                    <div className="w-1/2 mx-2">{renderColumn(column1)}</div>
                     {/* Second Column */}
-                    <div className="w-1/2">{renderColumn(column2)}</div>
+                    <div className="w-1/2 mr-2">{renderColumn(column2)}</div>
                 </div>
                 <div className="flex justify-center pt-4 pb-2">
                     <p className="text-lg font-semibold text-gray-800">

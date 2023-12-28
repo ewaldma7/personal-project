@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import axios from "axios";
+import Link from "next/link";
 
 export default function Register() {
     const [name, setName] = useState("");
@@ -129,6 +130,13 @@ export default function Register() {
                 </button>
               </div>
             </form>
+            <div className="flex justify-center py-4">
+            <Link href="/">
+              <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 my-2 px-4 rounded">
+                Back to Main Page
+              </button>
+            </Link>
+          </div>
           </div>
         </div>
       </>

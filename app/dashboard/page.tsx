@@ -29,9 +29,11 @@ const Dashboard = () => {
       </div>
       
       {/* Final button */}
+      <Link href={played ? "/results" : "/play"}>
       <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-8 px-16 rounded-xl text-xl">
         {played ? 'View Results' : 'Play'}
       </button>
+      </Link>
     </div>
   ) : (
     <div>Loading...</div>

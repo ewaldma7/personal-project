@@ -6,6 +6,7 @@ import { GiBaseballGlove } from "react-icons/gi";
 import classNames from 'classnames'
 import LoginButton from './LoginButton';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 const Navbar = () => {
 
@@ -16,10 +17,11 @@ const Navbar = () => {
     {label: 'Leaderboard', href: "/leaderboard"},
   ]
   const pathname = usePathname();
+  const { data: session } = useSession();
   const showNavbar = !noNavPaths.includes(pathname); // Check if current path is not root  
 
   return (
-    showNavbar &&
+    session && showNavbar &&
     <nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center'>
         <Link href="/"><GiBaseballGlove /></Link>
         <ul className='flex space-x-6'>
