@@ -7,10 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
-  user_id       Int    @id @default(autoincrement())
-  name          String @db.VarChar(255)
-  email         String @unique @db.VarChar(100)
-  password_hash String @db.VarChar(255)
-  role          Int    @default(0)
+model User {
+  user_id       Int      @id @default(autoincrement())
+  name          String   @db.VarChar(255)
+  email         String   @unique @db.VarChar(100)
+  password_hash String   @db.VarChar(255)
+  location      String?  @db.VarChar(255)
+  role          Int      @default(0)
+  results       Result[]
+}
+
+model Question {
+  question_id Int       @id @default(autoincrement())
+  question    String    @unique @db.Text
+  answer      String    @db.VarChar(255)
+  category    String    @db.VarChar(255)
+  createdAt   DateTime  @default(now()) @db.Date
+  updatedAt   DateTime? @updatedAt @db.Date
+  games       Game[]
+}
+
+model Game {
+  game_id   Int        @id @default(autoincrement())
+  date      DateTime   @unique @db.Date
+  questions Question[]
+  results   Result[]
+}
+
+model Result {
+  result_id Int  @id @default(autoincrement())
+  user_id   Int
+  user      User @relation(fields: [user_id], references: [user_id])
+  game      Game @relation(fields: [game_id], references: [game_id])
+  game_id   Int
+  score     Int
+
+  @@unique([user_id, game_id])
 }
