@@ -16,3 +16,9 @@ export const createUserSchema = z.object({
             return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
         }, { message: 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.' })
 });
+
+export const createQuestionSchema = z.object({
+    question: z.string().min(1, 'Question is required.'),
+    answer: z.string().min(1, 'Answer is required.').max(255),
+    category: z.string().min(1, 'Category is required.').max(255),
+});

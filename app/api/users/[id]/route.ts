@@ -18,3 +18,23 @@ export async function GET(request: NextRequest, {params}:{params: {id: number}})
         return NextResponse.json('Error', { status: 500 });
     }
 }
+
+export async function PUT(request: NextRequest, { params }: { params: { id: number } }) {
+    try {
+        const body = await request.json();
+        const userId = Number(params.id);
+        const updatedUser = await prisma.user.update({
+            where: {
+                user_id: userId,
+            },
+            data: {
+                ...body,
+            },
+        });
+        const { password_hash: _, ...userResponse } = updatedUser;
+        return NextResponse.json(userResponse, { status: 200 });
+    } catch (error) {
+        console.error('Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
