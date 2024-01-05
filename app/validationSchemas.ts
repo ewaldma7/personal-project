@@ -36,3 +36,9 @@ export const createGameSchema = z.object({
     date: z.date(),
     questions: z.array(questionSchema)
 });
+
+//TODO: FIX
+export const createResultSchema = z.object({
+    date: z.date(),
+    questions: z.array(questionSchema)
+});

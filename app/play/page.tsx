@@ -14,6 +14,7 @@ interface Question {
 }
 
 const GamePage = () => {
+  const NUM_QUESTIONS = 5;
   const [game, setGame] = useState({});
   const [questions, setQuestions] = useState<Question[]>([]);
   const todayDate = new Date().toISOString();
@@ -31,7 +32,7 @@ const GamePage = () => {
   }, []);
 
   const handleAnswerSubmit = () => {
-    if (count < 2) {
+    if (count < NUM_QUESTIONS - 1) {
       setCurrentQuestion(questions[count + 1]);
       setCount(count + 1);
     } else {
@@ -63,7 +64,7 @@ const GamePage = () => {
           onClick={handleAnswerSubmit}
           className="bg-blue-500 text-white font-semibold py-3 px-6 rounded-md text-xl"
         >
-          {count < 2 ? 'Next Question' : 'Submit Answers'}
+          {count < NUM_QUESTIONS - 1 ? 'Next Question' : 'Submit Answers'}
         </button>
       </div>
     </div>
