@@ -4,26 +4,36 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+interface Question {
+  question_id: number;
+  question: string;
+  answer: string;
+  category: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+}
+
 const GamePage = () => {
   const [game, setGame] = useState({});
-  const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [answers, setAnswers] = useState(Array(10).fill(''));
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const todayDate = new Date().toISOString();
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [answers, setAnswers] = useState(Array(5).fill(''));
+  const [count, setCount] = useState<number>(0);
   const router = useRouter();
 
-  const categories = [
-    'History',
-    'Science',
-    'Geography',
-    // ... more categories
-  ];
-
   useEffect(() => {
-      axios.get("http://localhost:3000/api/games").then(response => setGame(response.data)).catch(error => console.log(error));
+      axios.get(`http://localhost:3000/api/games/${todayDate}`).then(response => {
+        setGame(response.data);
+        setQuestions(response.data.questions);
+        setCurrentQuestion(response.data.questions[0]);
+      }).catch(error => console.log(error));
   }, []);
 
   const handleAnswerSubmit = () => {
-    if (currentQuestion < 10) {
-      setCurrentQuestion(currentQuestion + 1);
+    if (count < 2) {
+      setCurrentQuestion(questions[count + 1]);
+      setCount(count + 1);
     } else {
       // All questions answered, redirect to results page
       router.push('/results');
@@ -39,12 +49,13 @@ const GamePage = () => {
   return (
     <div className="flex justify-center items-center mt-12">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-6">Question {currentQuestion}</h1>
-        <p className="text-2xl mb-6">Category: {categories[currentQuestion - 1]}</p>
+        <h1 className="text-4xl font-bold mb-6">Question {count + 1}</h1>
+        <p className="text-2xl mb-6">Category: {currentQuestion?.category}</p>
+        <p className="text-2xl mb-6">{currentQuestion?.question}</p>
         <input
           type="text"
-          value={answers[currentQuestion - 1]}
-          onChange={(e) => handleChange(e, currentQuestion - 1)}
+          value={answers[count]}
+          onChange={(e) => handleChange(e, count)}
           className="border border-gray-300 rounded-md p-3 mb-6 text-xl"
           placeholder="Your answer..."
         />
@@ -52,7 +63,7 @@ const GamePage = () => {
           onClick={handleAnswerSubmit}
           className="bg-blue-500 text-white font-semibold py-3 px-6 rounded-md text-xl"
         >
-          {currentQuestion < 10 ? 'Next Question' : 'Submit Answers'}
+          {count < 2 ? 'Next Question' : 'Submit Answers'}
         </button>
       </div>
     </div>

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(newQuestion, { status: 201 });
     } catch (error) {
         console.log(error);
-        return NextResponse.json('Error creating user', { status: 500 });
+        return NextResponse.json('Error creating question', { status: 500 });
     }
 }
 
@@ -31,6 +31,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(allQuestions, { status: 200 });
     } catch (error) {
         console.log(error);
-        return NextResponse.json('Error creating user', { status: 500 });
+        return NextResponse.json('Error retrieving questions', { status: 500 });
     }
 }
