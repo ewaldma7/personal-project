@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 const GamePage = () => {
+  const [game, setGame] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [answers, setAnswers] = useState(Array(10).fill(''));
   const router = useRouter();
@@ -14,6 +16,10 @@ const GamePage = () => {
     'Geography',
     // ... more categories
   ];
+
+  useEffect(() => {
+      axios.get("http://localhost:3000/api/games").then(response => setGame(response.data)).catch(error => console.log(error));
+  }, []);
 
   const handleAnswerSubmit = () => {
     if (currentQuestion < 10) {

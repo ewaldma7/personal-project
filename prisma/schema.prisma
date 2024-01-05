@@ -19,28 +19,28 @@ model User {
 
 model Question {
   question_id Int       @id @default(autoincrement())
-  question    String    @unique @db.Text
+  question    String    @unique
   answer      String    @db.VarChar(255)
   category    String    @db.VarChar(255)
   createdAt   DateTime  @default(now()) @db.Date
   updatedAt   DateTime? @updatedAt @db.Date
-  games       Game[]
+  games       Game[]    @relation("GameToQuestion")
 }
 
 model Game {
   game_id   Int        @id @default(autoincrement())
   date      DateTime   @unique @db.Date
-  questions Question[]
   results   Result[]
+  questions Question[] @relation("GameToQuestion")
 }
 
 model Result {
   result_id Int  @id @default(autoincrement())
   user_id   Int
-  user      User @relation(fields: [user_id], references: [user_id])
-  game      Game @relation(fields: [game_id], references: [game_id])
   game_id   Int
   score     Int
+  game      Game @relation(fields: [game_id], references: [game_id])
+  user      User @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, game_id])
 }
