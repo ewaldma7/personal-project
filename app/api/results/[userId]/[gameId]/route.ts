@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, {params}:{params: {userId: strin
         if (existingResult) {
             return NextResponse.json(existingResult, {status: 200});
         }
-        return NextResponse.json('Result with this user and game does not exist', { status: 400 });
+        return NextResponse.json({}, { status: 200 });
     } catch (error) {
         console.log(error);
         return NextResponse.json('Error', { status: 500 });

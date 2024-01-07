@@ -3,14 +3,35 @@
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import axios from 'axios'
 
 const Dashboard = () => {
 
   const { data: session } = useSession();
   const [played, setPlayed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const currDate = new Date().toLocaleDateString();
+  const todayDate = new Date().toISOString();
 
-  return session ? (
+  useEffect(() => {
+    if (session) {
+      const fetchData = async () => {
+        try {
+          const gameResponse = await axios.get(`http://localhost:3000/api/games/${todayDate}`);
+          const resultResponse = await axios.get(`http://localhost:3000/api/results/${session.user.user_id}/${gameResponse.data.game_id}`);
+          if (Object.keys(resultResponse.data).length !== 0) {
+            setPlayed(true);
+          }
+          setLoaded(true);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      fetchData();
+    }
+  }, [session])
+
+  return session && loaded ? (
     <div className="min-h-screen flex flex-col justify-start items-center pt-16">
       {/* Title */}
       <h1 className="text-6xl font-bold mb-12 text-gray-800">Welcome {session?.user.name}!</h1>
@@ -34,9 +55,7 @@ const Dashboard = () => {
       </button>
       </Link>
     </div>
-  ) : (
-    <div>Loading...</div>
-  );
+  ) : ""
 }
 
 export default Dashboard

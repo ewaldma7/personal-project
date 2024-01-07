@@ -97,7 +97,7 @@ function ResultsPage() {
                 </div>
             </div>
         </div>
-        : <div>Loading...</div>
+        : ""
 }
 
 export default ResultsPage;
