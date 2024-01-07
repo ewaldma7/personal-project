@@ -14,9 +14,11 @@ interface Question {
   updatedAt: Date | null;
 }
 
+type id = number | null
+
 const GamePage = () => {
   const NUM_QUESTIONS = 5;
-  const [gameId, setGameId] = useState(0);
+  const [gameId, setGameId] = useState<id>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const todayDate = new Date().toISOString();
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -51,6 +53,7 @@ const GamePage = () => {
     console.log(answers);
     const score = calculateScore();
     try {
+      console.log(session?.user.user_id)
       const reqBody = {user_id: session?.user.user_id, game_id: gameId, answers: answers, score: score};
       const response = await axios.post('http://localhost:3000/api/results', reqBody);
       console.log(response.data);

@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
+        console.log(body);
         // const validation = createResultSchema.safeParse(body);
         // if (!validation.success) {
         //     return NextResponse.json(validation.error.format(), { status: 400 });
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
-        const allResults = await prisma.game.findMany();          
+        const allResults = await prisma.result.findMany();          
         return NextResponse.json(allResults, { status: 200 });
     } catch (error) {
         console.log(error);
