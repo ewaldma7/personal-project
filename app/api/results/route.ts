@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json('This result already exists', { status: 400 });
         }
         const newResult = await prisma.result.create(
-            { data: { user_id: body.user_id, game_id: body.game_id, score: body.score},
+            { data: { user_id: body.user_id, game_id: body.game_id, answers: body.answers, score: body.score},
         include: {game: true} });
         return NextResponse.json(newResult, { status: 201 });
     } catch (error) {
