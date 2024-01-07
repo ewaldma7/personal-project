@@ -7,7 +7,6 @@ import Link from 'next/link'
 const Dashboard = () => {
 
   const { data: session } = useSession();
-  const [loading, setLoading] = useState(true);
   const [played, setPlayed] = useState(false);
   const currDate = new Date().toLocaleDateString();
 

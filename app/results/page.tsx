@@ -4,18 +4,19 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import QuestionHoverCard from '../components/QuestionHoverCard';
 
-interface questionResult {
-    id: Number,
-    category: String,
-    answeredCorrectly: boolean
+interface QuestionObject extends Question {
+    guessed: string;
+    index: number;
 }
+
 interface Result {
-    result_id: Number,
-    user_id: Number,
-    game_id: Number,
-    answers: String[],
-    score: Number
+    result_id: Number;
+    user_id: Number;
+    game_id: Number;
+    answers: String[];
+    score: Number;
 }
 interface Question {
     question_id: number;
@@ -37,23 +38,7 @@ function ResultsPage() {
     const currDate = new Date().toLocaleDateString();
     const [score, setScore] = useState<number>(0);
     const [questions, setQuestions] = useState<Question[]>([]);
-
-    const questionResults: questionResult[] = [
-        { id: 1, category: 'History', answeredCorrectly: true },
-        { id: 2, category: 'Science', answeredCorrectly: false },
-        { id: 3, category: 'Geography', answeredCorrectly: true },
-        { id: 4, category: 'Mathematics', answeredCorrectly: true },
-        { id: 5, category: 'Literature', answeredCorrectly: false },
-        { id: 6, category: 'Art', answeredCorrectly: true },
-        { id: 7, category: 'Music', answeredCorrectly: false },
-        { id: 8, category: 'Sports', answeredCorrectly: true },
-        { id: 9, category: 'Movies', answeredCorrectly: true },
-        { id: 10, category: 'Technology', answeredCorrectly: false },
-    ];
-    const totalScore = questionResults.filter((q) => q.answeredCorrectly).length;
-    // Split questionResults into two columns
-    const column1 = questionResults.slice(0, 5);
-    const column2 = questionResults.slice(5, 10);
+    const [questionObjects, setQuestionObjects] = useState<QuestionObject[]>([]);
 
     useEffect(() => {
         if (userId) {
@@ -64,9 +49,18 @@ function ResultsPage() {
                     setGameId(gameData.game_id);
                     setQuestions(gameData.questions);
                     const resultResponse = await axios.get(`http://localhost:3000/api/results/${userId}/${gameData.game_id}`);
-                    const resultData : Result = resultResponse.data;
+                    const resultData: Result = resultResponse.data;
                     setResult(resultData);
                     setScore(Number(resultData.score));
+                    const questionObjectsWithAnswers : QuestionObject[] = gameData.questions.map((question: Question, index: number) => {
+                        const guessedAnswer = resultData.answers[index];
+                        return {
+                            index,
+                            ...question,
+                            guessed: guessedAnswer || ''
+                        };
+                    });
+                    setQuestionObjects(questionObjectsWithAnswers);
                 } catch (error) {
                     console.log(error);
                 }
@@ -75,27 +69,11 @@ function ResultsPage() {
         }
     }, [userId]);
 
-    const renderColumn = (column: questionResult[]) => {
-        return column.map((question, index) => (
-            <div key={index} className="flex items-center justify-between px-6 py-4 bg-gray-100 border border-gray-200 rounded-md my-2">
-                <div className="text-gray-600 font-semibold">{String(question.id)}.</div>
-                <div className="pl-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Question {String(question.id)}:</h3>
-                    <p className="text-sm text-gray-600">{question.category}</p>
-                </div>
-                <div className="flex-grow" />
-                <p className="text-lg font-semibold text-gray-800">
-                    {question.answeredCorrectly ? (
-                        <span className="text-green-500">✔</span>
-                    ) : (
-                        <span className="text-red-500">❌</span>
-                    )}
-                </p>
-            </div>
-        ));
+    const renderResults = (objects: QuestionObject[]) => {
+        return objects.map(obj => (<QuestionHoverCard key={obj.index} questionObject={obj}/>));
     };
 
-    return (
+    return questionObjects.length !== 0 ?
         <div className="max-w-xl mx-auto">
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="bg-gray-200 px-6 py-4 flex items-center justify-between">
@@ -103,10 +81,7 @@ function ResultsPage() {
                     <p className="text-sm text-gray-600">Result</p>
                 </div>
                 <div className="flex">
-                    {/* First Column */}
-                    <div className="w-1/2 mx-2">{renderColumn(column1)}</div>
-                    {/* Second Column */}
-                    <div className="w-1/2 mr-2">{renderColumn(column2)}</div>
+                    <div className="w-1/1 mx-2 my-2">{renderResults(questionObjects)}</div>
                 </div>
                 <div className="flex justify-center pt-4 pb-2">
                     <p className="text-lg font-semibold text-gray-800">
@@ -122,7 +97,7 @@ function ResultsPage() {
                 </div>
             </div>
         </div>
-    );
+        : <div>Loading...</div>
 }
 
 export default ResultsPage;
