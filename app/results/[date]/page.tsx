@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-import QuestionHoverCard from '../components/QuestionHoverCard';
+import QuestionHoverCard from '@/app/components/QuestionHoverCard';
 
 interface QuestionObject extends Question {
     guessed: string;
@@ -29,13 +29,12 @@ interface Question {
 
 type id = number | null
 
-function ResultsPage() {
+function ResultsPage({params} : {params: {date: string}}) {
 
-    const todayDate = new Date().toISOString();
     const [gameId, setGameId] = useState<id>(null);
     const userId = useSession().data?.user.user_id;
     const [result, setResult] = useState<Result | null>(null);
-    const currDate = new Date().toLocaleDateString();
+    const currDate = new Date(params.date);
     const [score, setScore] = useState<number>(0);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [questionObjects, setQuestionObjects] = useState<QuestionObject[]>([]);
@@ -44,7 +43,7 @@ function ResultsPage() {
         if (userId) {
             const fetchData = async () => {
                 try {
-                    const gameResponse = await axios.get(`http://localhost:3000/api/games/${todayDate}`);
+                    const gameResponse = await axios.get(`http://localhost:3000/api/games/${currDate.toISOString()}`);
                     const gameData = gameResponse.data;
                     setGameId(gameData.game_id);
                     setQuestions(gameData.questions);
@@ -77,7 +76,7 @@ function ResultsPage() {
         <div className="max-w-xl mx-auto">
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="bg-gray-200 px-6 py-4 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-gray-800">Results: {currDate}</h2>
+                    <h2 className="text-xl font-bold text-gray-800">Results: {currDate.toLocaleDateString()}</h2>
                     <p className="text-sm text-gray-600">Result</p>
                 </div>
                 <div className="flex">
