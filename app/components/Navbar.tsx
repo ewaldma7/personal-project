@@ -14,6 +14,7 @@ const Navbar = () => {
   const noNavPaths = ["/", "/login", "/register"]
   const links = [
     {label: 'Dashboard', href: "/dashboard"},
+    {label: 'Profile', href: "/profile"},
     {label: 'Leaderboard', href: "/leaderboard"},
   ]
   const pathname = usePathname();
