@@ -43,7 +43,7 @@ function ResultsPage({params} : {params: {date: string}}) {
         if (userId) {
             const fetchData = async () => {
                 try {
-                    const gameResponse = await axios.get(`http://localhost:3000/api/games/${currDate.toISOString()}`);
+                    const gameResponse = await axios.get(`http://localhost:3000/api/games/${currDate.toLocaleDateString().replace(/\//g, '-')}`);
                     const gameData = gameResponse.data;
                     setGameId(gameData.game_id);
                     setQuestions(gameData.questions);

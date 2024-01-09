@@ -29,19 +29,20 @@ model Question {
 
 model Game {
   game_id   Int        @id @default(autoincrement())
-  date      DateTime   @unique @db.Date
+  date      String     @unique @db.VarChar(30)
   results   Result[]
   questions Question[] @relation("GameToQuestion")
 }
 
 model Result {
-  result_id Int  @id @default(autoincrement())
+  result_id Int      @id @default(autoincrement())
   user_id   Int
   game_id   Int
-  answers   String[]
   score     Int
-  game      Game @relation(fields: [game_id], references: [game_id])
-  user      User @relation(fields: [user_id], references: [user_id])
+  date      String    @db.VarChar(30)
+  answers   String[]
+  game      Game     @relation(fields: [game_id], references: [game_id])
+  user      User     @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, game_id])
 }

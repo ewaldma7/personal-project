@@ -5,7 +5,7 @@ export async function GET(request: NextRequest, {params}:{params: {date: string}
     try {
         const existingGame = await prisma.game.findUnique({
             where: {
-                date: new Date(params.date)
+                date: params.date
             },
             include: {
                 questions: true
