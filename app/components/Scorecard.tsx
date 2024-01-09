@@ -11,14 +11,26 @@ interface ScorecardProps {
 const Scorecard: React.FC<ScorecardProps> = ({score, date}) => {
     return (
         <Link href={`/results/${date.replace(/\//g, '-')}`}>
-        <Card style={{border: `solid 2px RGB(156,130,117)`, backgroundColor: '#d1d5db'}} size="3" className='rounded-full mt-10 bg-gray-300 cursor-pointer '>
+          <Card
+            style={{
+              border: `solid 2px RGB(156, 130, 117)`,
+              backgroundColor: '#d1d5db',
+              display: 'inline-block',
+              margin: '0 8px 8px 0', // Adjust margin as needed for spacing
+            }}
+            size="3"
+            className="rounded-full bg-gray-300 cursor-pointer"
+          >
             <Grid rows="2" gap="2" display="inline-grid" flow="column">
-            <Avatar variant="solid"  radius="full" fallback={score} style={{margin: 'auto'}} />
-            <Text size="3"><Strong>{date}</Strong></Text>
+              <Avatar variant="solid" radius="full" fallback={score} style={{ margin: 'auto' }} />
+              <Text size="3">
+                <Strong>{date}</Strong>
+              </Text>
             </Grid>
-        </Card>
+          </Card>
         </Link>
-    )
+      );
+      
 }
 
 export default Scorecard

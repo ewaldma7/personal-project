@@ -66,30 +66,40 @@ const Dashboard = () => {
       {/* Title */}
       <h1 className="text-6xl font-bold mb-12 text-gray-800">Welcome {session?.user.name}!</h1>
       <p className="text-xl text-gray-600 mb-12">Today's Date: {previousDates[0].toLocaleDateString()}</p>
+      
       {/* Two larger buttons */}
       <div className="flex flex-col md:flex-row justify-center items-center mb-12">
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-8 px-16 rounded-xl mb-4 md:mb-0 md:mr-8 text-xl">
           Yesterday's Answers
         </button>
         <Link href="/leaderboard">
-        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-8 px-16 rounded-xl text-xl">
-          View Today's Leaderboard
-        </button>
+          <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-8 px-16 rounded-xl text-xl">
+            View Today's Leaderboard
+          </button>
         </Link>
       </div>
       
       {/* Final button */}
       <Link href={played ? `/results/${convertDate(previousDates[0])}` : "/play"}>
-      <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-8 px-16 rounded-xl text-xl">
-        {played ? 'View Results' : 'Play'}
-      </button>
+        <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-8 px-16 rounded-xl text-xl">
+          {played ? 'View Results' : 'Play'}
+        </button>
       </Link>
-      <p className="text-xl text-gray-600 mt-12 text-center">Past Games</p>
-      <div className="flex justify-center gap-8">
-      {results.map(result => <Scorecard key={String(result.game_id) + String(result.user_id)} score={String(result.score)} date={result.date}/>)}
+      
+      {/* Past Games section */}
+      <p className="text-xl text-gray-600 mt-10 mb-4 text-center">Past Games</p>
+      <div className="flex items-center gap-4">
+        {results.map(result => (
+          <Scorecard
+            key={String(result.game_id) + String(result.user_id)}
+            score={String(result.score)}
+            date={result.date}
+          />
+        ))}
       </div>
     </div>
-  ) : ""
+  ) : "";
+  
 }
 
 export default Dashboard
