@@ -70,6 +70,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => 
 };
 
 return (
+  currentQuestion &&
   <div className="flex justify-center items-center mt-12">
     <div className="text-center">
       <h1 className="text-4xl font-bold mb-6">Question {count + 1}</h1>
