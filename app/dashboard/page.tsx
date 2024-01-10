@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import axios from 'axios'
 import Scorecard from '../components/Scorecard'
+import PastGames from '../components/PastGames'
 
 const Dashboard = () => {
 
@@ -87,16 +88,7 @@ const Dashboard = () => {
       </Link>
       
       {/* Past Games section */}
-      <p className="text-xl text-gray-600 mt-10 mb-4 text-center">Past Games</p>
-      <div className="flex items-center gap-4">
-        {results.map(result => (
-          <Scorecard
-            key={String(result.game_id) + String(result.user_id)}
-            score={String(result.score)}
-            date={result.date}
-          />
-        ))}
-      </div>
+      <PastGames results={results} />
     </div>
   ) : "";
   

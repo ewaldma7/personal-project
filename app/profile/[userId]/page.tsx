@@ -1,31 +1,65 @@
 'use client'
 
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from 'react-icons/fi'; // Import icons
 
-function UserProfile() {
 
-    type CategoryStats = {
-        [key: string]: number;
-      };
-      
-      type UserStats = {
-        daysPlayed: number;
-        averageScore: number;
-        categoryStats: CategoryStats;
-      };
 
-  const [userProfile] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    location: 'New York, USA',
-  });
+function UserProfile({ params }: { params: { userId: string } }) {
+
+  interface User {
+    user_id: Number;
+    name: String;
+    email: String;
+    location: String | null;
+    role: Number;
+  }
+
+  interface Result {
+    result_id: Number;
+    user_id: Number;
+    game_id: Number;
+    answers: String[];
+    score: Number;
+  }
+
+  const [results, setResults] = useState<Result[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = await axios.get(`http://localhost:3000/api/users/${params.userId}`);
+        const results = await axios.get(`http://localhost:3000/api/results/${params.userId}/*`);
+        setResults(results.data);
+        console.log(results.data)
+        setUser(user.data);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
+
+  type CategoryStats = {
+    [key: string]: number;
+  };
+
+  type UserStats = {
+    daysPlayed: number;
+    averageScore: number;
+    categoryStats: CategoryStats;
+  };
+
+  const [loading, setLoading] = useState(true);
 
   const [userStats] = useState<UserStats>({
     daysPlayed: 50,
     averageScore: 75,
     categoryStats: {
-      math: 80, // Assuming these are direct percentages for each category
+      geography: 80, // Assuming these are direct percentages for each category
       history: 70,
       science: 85,
       entertainment: 100,
@@ -36,10 +70,10 @@ function UserProfile() {
 
   const [userFriends] = useState([
     { id: 1, name: 'Friend 1', email: 'testing@gmail.com' },
-    { id: 2, name: 'Friend 2', email: 'testing@gmail.com'  },
-    { id: 3, name: 'Friend 3', email: 'testing@gmail.com'  },
-    { id: 4, name: 'Friend 4', email: 'testing@gmail.com'  },
-    { id: 5, name: 'Friend 5', email: 'testing@gmail.com'  },
+    { id: 2, name: 'Friend 2', email: 'testing@gmail.com' },
+    { id: 3, name: 'Friend 3', email: 'testing@gmail.com' },
+    { id: 4, name: 'Friend 4', email: 'testing@gmail.com' },
+    { id: 5, name: 'Friend 5', email: 'testing@gmail.com' },
   ]);
 
   const renderAvatar = (name: string) => {
@@ -66,7 +100,7 @@ function UserProfile() {
 
   const categories: [string, number][] = Object.entries(userStats.categoryStats);
   const chunkedCategories: [string, number][][] = chunkArray(categories, 3);
-  
+
 
   const renderCategoryStats = () => (
     <div className="container mx-auto mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -97,20 +131,21 @@ function UserProfile() {
   );
 
   return (
+    !loading &&
     <div className="container mx-auto mt-8 flex flex-col lg:flex-row gap-8">
       <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
         <h2 className="text-2xl font-bold mb-4">Profile</h2>
         <div className="flex flex-col">
           <div className="mb-4 flex items-center">
-            <h2 className="text-2xl font-semibold mb-2 mr-2">{userProfile.name}</h2>
+            <h2 className="text-2xl font-semibold mb-2 mr-2">{user?.name}</h2>
           </div>
-          <p className="text-gray-600 flex items-center"><FiMail className="mr-2" /> {userProfile.email}</p>
-          <p className="text-gray-600 flex items-center"><FiMapPin className="mr-2" /> {userProfile.location}</p>
+          <p className="text-gray-600 flex items-center"><FiMail className="mr-2" /> {user?.email}</p>
+          <p className="text-gray-600 flex items-center"><FiMapPin className="mr-2" /> {user?.location}</p>
           <div className="flex items-center my-4">
             <FiCalendar className="text-4xl mr-4 text-blue-500" />
             <div>
               <p className="text-xl font-semibold">Days Played</p>
-              <p className="text-gray-600">{userStats.daysPlayed}</p>
+              <p className="text-gray-600">{results.length}</p>
             </div>
           </div>
           <div className="flex items-center">
@@ -119,14 +154,14 @@ function UserProfile() {
               <p className="text-xl font-semibold">Average Score</p>
               <p className="text-gray-600">{userStats.averageScore}</p>
             </div>
-            </div>
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto mt-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {renderCategoryStats()}
-      </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {renderCategoryStats()}
+        </div>
       </div>
 
       <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
@@ -135,7 +170,7 @@ function UserProfile() {
           {userFriends.map((friend) => renderFriendCard(friend))}
         </div>
         <button className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded">
-          <FiUsers className="mr-2" style={{ display: 'inline' }}/> Add Friends
+          <FiUsers className="mr-2" style={{ display: 'inline' }} /> Add Friends
         </button>
       </div>
     </div>

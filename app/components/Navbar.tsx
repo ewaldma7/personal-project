@@ -11,14 +11,14 @@ import { useSession } from 'next-auth/react';
 const Navbar = () => {
 
   const currentPath = usePathname();
+  const { data: session } = useSession();
   const noNavPaths = ["/", "/login", "/register"]
   const links = [
     {label: 'Dashboard', href: "/dashboard"},
-    {label: 'Profile', href: "/profile"},
+    {label: 'Profile', href: `/profile/${session?.user.user_id}`},
     {label: 'Leaderboard', href: "/leaderboard"},
   ]
   const pathname = usePathname();
-  const { data: session } = useSession();
   const showNavbar = !noNavPaths.includes(pathname); // Check if current path is not root  
 
   return (
