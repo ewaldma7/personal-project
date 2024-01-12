@@ -14,19 +14,8 @@ model User {
   password_hash String   @db.VarChar(255)
   location      String?  @db.VarChar(255)
   role          Int      @default(0)
-  results       Result[]
   guesses       Guess[]
-}
-
-model Question {
-  question_id Int       @id @default(autoincrement())
-  question    String    @unique
-  answer      String    @db.VarChar(255)
-  category    String    @db.VarChar(255)
-  createdAt   DateTime  @default(now()) @db.Date
-  updatedAt   DateTime? @updatedAt @db.Date
-  games       Game[]    @relation("GameToQuestion")
-  guesses     Guess[]
+  results       Result[]
 }
 
 model Game {
@@ -34,6 +23,18 @@ model Game {
   date      String     @unique @db.VarChar(30)
   results   Result[]
   questions Question[] @relation("GameToQuestion")
+}
+
+model Question {
+  question_id   Int       @id @default(autoincrement())
+  question      String    @unique
+  category      String    @db.VarChar(255)
+  createdAt     DateTime  @default(now()) @db.Date
+  updatedAt     DateTime? @updatedAt @db.Date
+  choices       String[]
+  correctChoice String    @db.VarChar(255)
+  guesses       Guess[]
+  games         Game[]    @relation("GameToQuestion")
 }
 
 model Result {
@@ -50,21 +51,22 @@ model Result {
 }
 
 model Guess {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [user_id], references: [user_id])
+  id          Int      @id @default(autoincrement())
   user_id     Int
-  question   Question @relation(fields: [question_id], references: [question_id])
   question_id Int
-  result     Result   @relation(fields: [result_id], references: [result_id])
-  result_id  Int
-  guess      String
-  isCorrect  Boolean
+  result_id   Int
+  guess       String
+  isCorrect   Boolean
+  question    Question @relation(fields: [question_id], references: [question_id])
+  result      Result   @relation(fields: [result_id], references: [result_id])
+  user        User     @relation(fields: [user_id], references: [user_id])
+
+  @@unique([user_id, question_id, result_id])
 }
 
 enum Role {
   USER
   ADMIN
-  // Add more roles if needed in the future
 }
 
 enum Category {

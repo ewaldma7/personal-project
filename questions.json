@@ -1,0 +1,141 @@
+[
+    {
+      "question": "Who was the first president of the United States?",
+      "correctChoice": "George Washington",
+      "choices": ["Thomas Jefferson", "John Adams", "George Washington", "James Madison", "Alexander Hamilton"],
+      "category": "HISTORY"
+    },
+    {
+      "question": "What is the capital of France?",
+      "correctChoice": "Paris",
+      "choices": ["Berlin", "Madrid", "Rome", "Paris", "London"],
+      "category": "GEOGRAPHY"
+    },
+    {
+      "question": "What is the largest planet in our solar system?",
+      "correctChoice": "Jupiter",
+      "choices": ["Venus", "Saturn", "Mars", "Jupiter", "Neptune"],
+      "category": "SCIENCE"
+    },
+    {
+      "question": "In which year did the first modern Olympic Games take place?",
+      "correctChoice": "1896",
+      "choices": ["1900", "1920", "1896", "1936", "2000"],
+      "category": "SPORTS"
+    },
+    {
+      "question": "Who painted the Mona Lisa?",
+      "correctChoice": "Leonardo da Vinci",
+      "choices": ["Vincent van Gogh", "Pablo Picasso", "Claude Monet", "Leonardo da Vinci", "Michelangelo"],
+      "category": "ART"
+    },
+    {
+      "question": "Which ancient civilization built the pyramids?",
+      "correctChoice": "Egyptians",
+      "choices": ["Sumerians", "Greeks", "Romans", "Mayans", "Egyptians"],
+      "category": "HISTORY"
+    },
+    {
+      "question": "Which mountain range is the longest in the world?",
+      "correctChoice": "Andes",
+      "choices": ["Himalayas", "Rockies", "Alps", "Andes", "Appalachians"],
+      "category": "GEOGRAPHY"
+    },
+    {
+      "question": "What is the chemical symbol for gold?",
+      "correctChoice": "Au",
+      "choices": ["Ag", "Cu", "Fe", "Au", "Pb"],
+      "category": "SCIENCE"
+    },
+    {
+      "question": "Who holds the record for the most Olympic gold medals?",
+      "correctChoice": "Michael Phelps",
+      "choices": ["Usain Bolt", "Simone Biles", "Michael Phelps", "Serena Williams", "Nadia Comăneci"],
+      "category": "SPORTS"
+    },
+    {
+      "question": "Who sculpted the Statue of David?",
+      "correctChoice": "Michelangelo",
+      "choices": ["Donatello", "Leonardo da Vinci", "Raphael", "Michelangelo", "Titian"],
+      "category": "ART"
+    },
+    {
+      "question": "Which actor played James Bond in 'Casino Royale'?",
+      "correctChoice": "Daniel Craig",
+      "choices": ["Pierce Brosnan", "Sean Connery", "Roger Moore", "Daniel Craig", "Timothy Dalton"],
+      "category": "ENTERTAINMENT"
+    },
+    {
+      "question": "Which ancient Greek philosopher is known for his 'Republic'?",
+      "correctChoice": "Plato",
+      "choices": ["Socrates", "Aristotle", "Plato", "Heraclitus", "Democritus"],
+      "category": "HISTORY"
+    },
+    {
+      "question": "What is the driest desert in the world?",
+      "correctChoice": "Atacama",
+      "choices": ["Sahara", "Arabian", "Gobi", "Atacama", "Karakum"],
+      "category": "GEOGRAPHY"
+    },
+    {
+      "question": "What is the speed of light in a vacuum?",
+      "correctChoice": "299,792 kilometers per second",
+      "choices": ["150,000 km/s", "299,792 km/s", "450,000 km/s", "200,000 km/s", "350,000 km/s"],
+      "category": "SCIENCE"
+    },
+    {
+      "question": "Who won the FIFA World Cup in 2018?",
+      "correctChoice": "France",
+      "choices": ["Brazil", "Germany", "France", "Spain", "Argentina"],
+      "category": "SPORTS"
+    },
+    {
+      "question": "Who painted 'Starry Night'?",
+      "correctChoice": "Vincent van Gogh",
+      "choices": ["Claude Monet", "Pablo Picasso", "Vincent van Gogh", "Salvador Dali", "Edvard Munch"],
+      "category": "ART"
+    },
+    {
+      "question": "Which animated movie features a character named Simba?",
+      "correctChoice": "The Lion King",
+      "choices": ["Toy Story", "Finding Nemo", "The Lion King", "Shrek", "Frozen"],
+      "category": "ENTERTAINMENT"
+    },
+    {
+      "question": "Who was the leader of the Soviet Union during World War II?",
+      "correctChoice": "Joseph Stalin",
+      "choices": ["Vladimir Lenin", "Nikita Khrushchev", "Joseph Stalin", "Leon Trotsky", "Mikhail Gorbachev"],
+      "category": "HISTORY"
+    },
+    {
+      "question": "What is the largest ocean on Earth?",
+      "correctChoice": "Pacific Ocean",
+      "choices": ["Atlantic Ocean", "Indian Ocean", "Southern Ocean", "Arctic Ocean", "Pacific Ocean"],
+      "category": "GEOGRAPHY"
+    },
+    {
+      "question": "What is the chemical symbol for water?",
+      "correctChoice": "H2O",
+      "choices": ["CO2", "O2", "H2O", "N2", "CH4"],
+      "category": "SCIENCE"
+    },
+    {
+      "question": "Which country won the first FIFA World Cup in 1930?",
+      "correctChoice": "Uruguay",
+      "choices": ["Brazil", "Germany", "Uruguay", "Italy", "Argentina"],
+      "category": "SPORTS"
+    },
+    {
+      "question": "Who created the 'Campbell's Soup Cans' artwork?",
+      "correctChoice": "Andy Warhol",
+      "choices": ["Pablo Picasso", "Vincent van Gogh", "Leonardo da Vinci", "Claude Monet", "Andy Warhol"],
+      "category": "ART"
+    },
+    {
+      "question": "Who played the character Tony Stark in the Marvel Cinematic Universe?",
+      "correctChoice": "Robert Downey Jr.",
+      "choices": ["Chris Hemsworth", "Chris Evans", "Scarlett Johansson", "Robert Downey Jr.", "Mark Ruffalo"],
+      "category": "ENTERTAINMENT"
+    }
+  ]
+  
