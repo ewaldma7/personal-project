@@ -12,6 +12,9 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
             user_id: Number(userId),
             game_id: Number(gameId)
           }
+        },
+        include: {
+          guesses: true
         }
       });
       return NextResponse.json(existingResult || {}, { status: 200 });

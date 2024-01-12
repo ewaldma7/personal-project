@@ -4,12 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-import QuestionHoverCard from '@/app/components/QuestionHoverCard';
 
-interface QuestionObject extends Question {
-    guessed: string;
-    index: number;
-}
 
 interface Result {
     result_id: Number;
@@ -17,6 +12,16 @@ interface Result {
     game_id: Number;
     answers: String[];
     score: Number;
+    guesses: Guess[];
+}
+
+interface Guess {
+    id: Number;
+    user_id: Number;
+    question_id: Number;
+    result_id: Number;
+    guess: String;
+    isCorrect: boolean;
 }
 interface Question {
     question_id: number;
@@ -31,13 +36,11 @@ type id = number | null
 
 function ResultsPage({params} : {params: {date: string}}) {
 
-    const [gameId, setGameId] = useState<id>(null);
     const userId = useSession().data?.user.user_id;
     const [result, setResult] = useState<Result | null>(null);
     const currDate = new Date(params.date);
-    const [score, setScore] = useState<number>(0);
     const [questions, setQuestions] = useState<Question[]>([]);
-    const [questionObjects, setQuestionObjects] = useState<QuestionObject[]>([]);
+    const [guesses, setGuesses] = useState<Guess[] | undefined>([]);
 
     useEffect(() => {
         if (userId) {
@@ -45,21 +48,11 @@ function ResultsPage({params} : {params: {date: string}}) {
                 try {
                     const gameResponse = await axios.get(`http://localhost:3000/api/games/${currDate.toLocaleDateString().replace(/\//g, '-')}`);
                     const gameData = gameResponse.data;
-                    setGameId(gameData.game_id);
                     setQuestions(gameData.questions);
                     const resultResponse = await axios.get(`http://localhost:3000/api/results/${userId}/${gameData.game_id}`);
                     const resultData: Result = resultResponse.data;
                     setResult(resultData);
-                    setScore(Number(resultData.score));
-                    const questionObjectsWithAnswers : QuestionObject[] = gameData.questions.map((question: Question, index: number) => {
-                        const guessedAnswer = resultData.answers[index];
-                        return {
-                            index,
-                            ...question,
-                            guessed: guessedAnswer || ''
-                        };
-                    });
-                    setQuestionObjects(questionObjectsWithAnswers);
+                    setGuesses(resultData.guesses);
                 } catch (error) {
                     console.log(error);
                 }
@@ -68,24 +61,27 @@ function ResultsPage({params} : {params: {date: string}}) {
         }
     }, [userId]);
 
-    const renderResults = (objects: QuestionObject[]) => {
-        return objects.map(obj => (<QuestionHoverCard key={obj.index} questionObject={obj}/>));
-    };
-
-    return questionObjects.length !== 0 ?
+    return guesses?.length !== 0 ? (
         <div className="max-w-xl mx-auto">
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="bg-gray-200 px-6 py-4 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-800">Results: {currDate.toLocaleDateString()}</h2>
                     <p className="text-sm text-gray-600">Result</p>
                 </div>
-                <div className="flex">
-                    <div className="w-1/1 mx-2 my-2">{renderResults(questionObjects)}</div>
-                </div>
                 <div className="flex justify-center pt-4 pb-2">
                     <p className="text-lg font-semibold text-gray-800">
-                        Total Score: {score}/{questions.length}
+                        Total Score: {String(result?.score)}/{questions.length}
                     </p>
+                </div>
+                <div className="flex flex-col items-center pb-4">
+                    {guesses?.map((guess) => (
+                        <div key={guess.id as any} className="bg-gray-100 my-2 p-4 rounded">
+                            <p className="text-gray-700">Question: {questions.find(q => q.question_id === guess.question_id)?.question}</p>
+                            <p className={`text-${guess.isCorrect ? 'green' : 'red'}-500 font-semibold`}>
+                                Your Guess: {guess.guess} ({guess.isCorrect ? 'Correct' : 'Incorrect'})
+                            </p>
+                        </div>
+                    ))}
                 </div>
                 <div className="flex justify-center py-4">
                     <Link href="/dashboard">
@@ -96,7 +92,7 @@ function ResultsPage({params} : {params: {date: string}}) {
                 </div>
             </div>
         </div>
-        : ""
+    ) : "";
 }
 
 export default ResultsPage;
