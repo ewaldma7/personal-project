@@ -24,7 +24,8 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
     const orderBy = userId === "*" ? undefined : { date: 'desc' as const};
     const results = await prisma.result.findMany({
       where: filter,
-      orderBy: orderBy
+      orderBy: orderBy,
+      include: {guesses: true}
     });
 
     return NextResponse.json(results, { status: 200 });

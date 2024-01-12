@@ -51,7 +51,7 @@ const GamePage = () => {
   }
 
   const updateData = () => {
-    guesses[count] = {question_id: currentQuestion?.question_id, guess: getGuess(), isCorrect: isCorrect(), user_id: session?.user.user_id }
+    guesses[count] = {question_id: currentQuestion?.question_id, category: currentQuestion?.category, guess: getGuess(), isCorrect: isCorrect(), user_id: session?.user.user_id }
     setGuesses(guesses);
     console.log(guesses);
   }
