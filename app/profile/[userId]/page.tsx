@@ -9,32 +9,61 @@ import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from 'react-icons/fi'; 
 function UserProfile({ params }: { params: { userId: string } }) {
 
   interface User {
-    user_id: Number;
-    name: String;
-    email: String;
-    location: String | null;
-    role: Number;
+    user_id: number;
+    name: string;
+    email: string;
+    location: string | null;
+    role: number;
   }
 
   interface Result {
-    result_id: Number;
-    user_id: Number;
-    game_id: Number;
-    answers: String[];
-    score: Number;
+    result_id: number;
+    user_id: number;
+    game_id: number;
+    answers: string[];
+    score: number;
+    guesses: Guess[];
+    date: string;
   }
+
+  interface Guess {
+    id: number;
+    question_id: number;
+    result_id: number;
+    user_id: number;
+    category: string;
+    guess: string;
+    isCorrect: boolean;
+  }
+
+  type CategoryObject = { category: string; percentage: number };
 
   const [results, setResults] = useState<Result[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [guesses, setGuesses] = useState<Guess[]>([]);
+  const [avgScore, setAvgScore] = useState(0);
+  const [catMap, setCatMap] = useState<CategoryObject[]>([]);
+
+  function getAvgScore() {
+    if (results.length === 0) {
+      return 0;
+    }
+    const totalScore = results.reduce((sum, result) => sum + result.score, 0);
+    const averageScore = totalScore / results.length;
+    return averageScore;
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const user = await axios.get(`http://localhost:3000/api/users/${params.userId}`);
-        const results = await axios.get(`http://localhost:3000/api/results/${params.userId}/*`);
-        setResults(results.data);
-        console.log(results.data)
+        const resultsResponse = await axios.get(`http://localhost:3000/api/results/${params.userId}/*`);
+        setResults(resultsResponse.data);
         setUser(user.data);
+        const allGuesses: Guess[] = resultsResponse.data.reduce((combinedGuesses: Guess[], result: Result) => {
+          return combinedGuesses.concat(result.guesses);
+        }, []);
+        setGuesses(allGuesses);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -43,30 +72,40 @@ function UserProfile({ params }: { params: { userId: string } }) {
     fetchData();
   }, []);
 
-  type CategoryStats = {
-    [key: string]: number;
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (results.length !== 0) {
+          setAvgScore(getAvgScore());
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, [results]);
 
-  type UserStats = {
-    daysPlayed: number;
-    averageScore: number;
-    categoryStats: CategoryStats;
-  };
+  useEffect(() => {
+    const categoryPercentages = Array.from(
+      guesses.reduce((stats, guess) => {
+        const { category, isCorrect } = guess;
+        stats.set(
+          category,
+          stats.get(category) || { total: 0, correct: 0 }
+        );
+        stats.get(category)!.total += 1;
+        stats.get(category)!.correct += isCorrect ? 1 : 0;
+        return stats;
+      }, new Map<string, { total: number; correct: number }>())
+    ).map(([category, { total, correct }]) => ({
+      category,
+      percentage: (correct / total) * 100 || 0,
+    }));
+    setCatMap(categoryPercentages);
+    console.log(categoryPercentages);
+  }, [guesses]);
 
   const [loading, setLoading] = useState(true);
-
-  const [userStats] = useState<UserStats>({
-    daysPlayed: 50,
-    averageScore: 75,
-    categoryStats: {
-      geography: 80, // Assuming these are direct percentages for each category
-      history: 70,
-      science: 85,
-      entertainment: 100,
-      art: 25,
-      sports: 50
-    },
-  });
 
   const [userFriends] = useState([
     { id: 1, name: 'Friend 1', email: 'testing@gmail.com' },
@@ -90,35 +129,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
     );
   };
 
-  const chunkArray = (array: any[], chunkSize: number) => {
-    const chunkedArray = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunkedArray.push(array.slice(i, i + chunkSize));
-    }
-    return chunkedArray;
-  };
-
-  const categories: [string, number][] = Object.entries(userStats.categoryStats);
-  const chunkedCategories: [string, number][][] = chunkArray(categories, 3);
-
-
-  const renderCategoryStats = () => (
-    <div className="container mx-auto mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {chunkedCategories.map((chunk: [string, number][], index: number) => (
-        <div key={index} className="flex flex-col gap-4">
-          {chunk.map(([category, percentage]: [string, number]) => (
-            <div key={category} className="p-4 bg-gray-100 rounded-lg shadow-lg">
-              <h2 className="text-2xl font-bold mb-2">{category.charAt(0).toUpperCase() + category.slice(1)}</h2>
-              <div className="bg-blue-400 h-8 rounded-md mb-2">
-                <div className="h-full bg-blue-600" style={{ width: `${percentage}%` }}></div>
-              </div>
-              <p className="text-gray-600">{percentage}% Correct</p>
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
+  const categories: string[] = Object.keys(catMap);
 
   const renderFriendCard = (friend: any) => (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center" key={friend.id}>
@@ -145,24 +156,32 @@ function UserProfile({ params }: { params: { userId: string } }) {
             <FiCalendar className="text-4xl mr-4 text-blue-500" />
             <div>
               <p className="text-xl font-semibold">Days Played</p>
-              <p className="text-gray-600">{results.length}</p>
+              <p className="text-gray-600 text-4xl">{results.length}</p>
             </div>
           </div>
           <div className="flex items-center">
             <FiStar className="text-4xl mr-4 text-yellow-500" />
             <div>
               <p className="text-xl font-semibold">Average Score</p>
-              <p className="text-gray-600">{userStats.averageScore}</p>
+              <p className="text-gray-600 text-4xl">{avgScore}</p>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="container mx-auto mt-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {renderCategoryStats()}
+      <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/2">
+          <h2 className="text-2xl font-bold mb-4">Category Percentages</h2>
+          <div className="grid grid-cols-3 gap-4">
+            {catMap.map((categoryObj) => (
+              <div
+                key={categoryObj.category}
+                className="mb-4 text-center"
+              >
+                <span className="block text-xl font-semibold mb-2">{categoryObj.category}</span>
+                <span className="block text-4xl text-blue-600 font-bold">{categoryObj.percentage.toFixed(0)}%</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
       <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
         <h2 className="text-2xl font-bold mb-4">Friends</h2>
