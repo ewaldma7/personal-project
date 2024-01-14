@@ -1,5 +1,6 @@
 'use client'
 
+import { MantineProvider } from '@mantine/core';
 import { SessionProvider } from 'next-auth/react';
 import React, { ReactNode } from 'react'
 
@@ -9,7 +10,7 @@ interface Props {
 
 const Providers = ({children}: Props) => {
   return (
-    <SessionProvider>{children}</SessionProvider>
+    <SessionProvider><MantineProvider>{children}</MantineProvider></SessionProvider>
   )
 }
 

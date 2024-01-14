@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import { Group, Avatar, Text, Accordion, Button, Title, Badge, Grid } from '@mantine/core';
 
 
 interface Result {
@@ -21,26 +22,80 @@ interface Guess {
     question_id: Number;
     result_id: Number;
     guess: String;
+    category: string;
     isCorrect: boolean;
 }
 interface Question {
     question_id: number;
     question: string;
+    correctChoice: string;
     answer: string;
     category: string;
     createdAt: Date;
     updatedAt: Date | null;
 }
 
-type id = number | null
+interface AccLabelProps {
+    guess: Guess;
+}
 
-function ResultsPage({params} : {params: {date: string}}) {
+function ResultsPage({ params }: { params: { date: string } }) {
 
     const userId = useSession().data?.user.user_id;
     const [result, setResult] = useState<Result | null>(null);
     const currDate = new Date(params.date);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [guesses, setGuesses] = useState<Guess[] | undefined>([]);
+    const colorMap = new Map<string, string>([
+        ["ENTERTAINMENT", "pink"],
+        ["SPORTS", "orange"],
+        ["ART", "red"],
+        ["SCIENCE", "green"],
+        ["GEOGRAPHY", "blue"],
+        ["HISTORY", "yellow"],
+    ]);
+
+    function AccordionLabel({ guess }: AccLabelProps) {
+        return (
+            <Grid className='ml-5'>
+                <Grid.Col span={1}>
+                    <Avatar variant="filled" radius="xl" size="md" color={guess.isCorrect ? 'green' : 'red'}> </Avatar>
+                </Grid.Col>
+                <Grid.Col span={9}>
+                    <Text size='xl'>{questions.find(question => question.question_id === guess.question_id)?.question}</Text>
+                </Grid.Col>
+                <Grid.Col span={1}>
+                <Badge size="lg" color={colorMap.get(guess.category)}>
+                    {guess.category}
+                </Badge>
+                </Grid.Col>
+            </Grid>
+        );
+    }
+
+    const items = guesses?.map((guess: Guess) => (
+        <Accordion.Item value={String(guess.id)} key={String(guess.id)}>
+            <Accordion.Control>
+                <AccordionLabel guess={guess} />
+            </Accordion.Control>
+            <Accordion.Panel>
+                <Grid className='ml-5'>
+                    <Grid.Col span={2}>
+                        <Text size='xl' fw={700}>Your Guess:</Text>
+                    </Grid.Col>
+                    <Grid.Col span={10}>
+                        <Badge size="xl" color={guess.isCorrect ? 'green' : 'red'}>{guess.guess}</Badge>
+                    </Grid.Col>
+                    <Grid.Col span={2}>
+                        <Text size='xl' fw={700}>Correct Answer:</Text>
+                    </Grid.Col>
+                    <Grid.Col span={10}>
+                        <Badge size="xl" color='green'>{guess.isCorrect ? guess.guess : questions.find(question => question.question_id === guess.question_id)?.correctChoice}</Badge>
+                    </Grid.Col>
+                </Grid>
+            </Accordion.Panel>
+        </Accordion.Item>
+    ));
 
     useEffect(() => {
         if (userId) {
@@ -62,35 +117,15 @@ function ResultsPage({params} : {params: {date: string}}) {
     }, [userId]);
 
     return guesses?.length !== 0 ? (
-        <div className="max-w-xl mx-auto">
-            <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                <div className="bg-gray-200 px-6 py-4 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-gray-800">Results: {currDate.toLocaleDateString()}</h2>
-                    <p className="text-sm text-gray-600">Result</p>
-                </div>
-                <div className="flex justify-center pt-4 pb-2">
-                    <p className="text-lg font-semibold text-gray-800">
-                        Total Score: {String(result?.score)}/{questions.length}
-                    </p>
-                </div>
-                <div className="flex flex-col items-center pb-4">
-                    {guesses?.map((guess) => (
-                        <div key={guess.id as any} className="bg-gray-100 my-2 p-4 rounded">
-                            <p className="text-gray-700">Question: {questions.find(q => q.question_id === guess.question_id)?.question}</p>
-                            <p className={`text-${guess.isCorrect ? 'green' : 'red'}-500 font-semibold`}>
-                                Your Guess: {guess.guess} ({guess.isCorrect ? 'Correct' : 'Incorrect'})
-                            </p>
-                        </div>
-                    ))}
-                </div>
-                <div className="flex justify-center py-4">
-                    <Link href="/dashboard">
-                        <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 mb-2 px-4 rounded">
-                            Back to Dashboard
-                        </button>
-                    </Link>
-                </div>
-            </div>
+        <div className=' justify-center items-center ml-20'>
+            <Title>Results For: {params.date}</Title>
+            <Accordion chevronPosition="right" variant="contained" className='mb-5 mt-5 max-w-7xl'>
+                {items}
+            </Accordion>
+            <Title>Score: {String(result?.score)}</Title>
+            <Link href="/dashboard">
+            <Button color='gray' className='mt-5'>Back to Dashboard</Button>
+            </Link>
         </div>
     ) : "";
 }
