@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import React from 'react'
-import { GiBaseballGlove } from "react-icons/gi";
 import classNames from 'classnames'
-import LoginButton from './LoginButton';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import ProfileMenu from './ProfileMenu';
 
 const Navbar = () => {
 
@@ -23,8 +22,8 @@ const Navbar = () => {
 
   return (
     session && showNavbar &&
-    <nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center'>
-        <Link href="/"><GiBaseballGlove /></Link>
+    <nav className='flex space-x-6 border-b mb-5 px-5 py-5 h-20 items-center'>
+        <ProfileMenu name={session.user.name}/>
         <ul className='flex space-x-6'>
             {links.map(link => <Link key={link.href} href={link.href} 
             className={classNames({
@@ -33,7 +32,6 @@ const Navbar = () => {
                 'hover:text-zinc-800 transition-colors': true
             })}>{link.label}</Link>)}
         </ul>
-        <LoginButton />
     </nav>
   )
 }

@@ -8,6 +8,7 @@ import Link from "next/link";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [guessed, setGuessed] = useState(false);
   const validPassword = true; //NEED TO CHANGE
 
   const logIn = async (e: React.FormEvent) => {
@@ -15,9 +16,18 @@ export default function Login() {
     const res = await signIn("credentials", {
       username: email,
       password: password,
-      redirect: true,
+      redirect: false,
       callbackUrl: "/dashboard"
     });
+    if (res?.ok) {
+      // Login successful
+      window.location.href = "/dashboard";
+      console.log("Login successful");
+    } else {
+      // Login failed
+      setGuessed(true);
+      console.error("Login failed");
+    }
   }
 
   return (
@@ -60,6 +70,7 @@ export default function Login() {
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
+                {guessed && <h3 style={{color: "red"}} >Invalid Email or Password</h3>}
               </div>
               <div className="mt-2">
                 <input
