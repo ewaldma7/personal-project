@@ -9,6 +9,7 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm_password, setConfirmPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const validPassword = (password && confirm_password && (password === confirm_password)) ? true : false;
 
     const registerUser = async (e: React.FormEvent) => {
@@ -21,8 +22,9 @@ export default function Register() {
           });
           console.log("Success: ", response.data);
           window.location.assign("/login")
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error: ", error);
+          setErrorMessage(error.response.data.password._errors[0]);
         }
       };
 
@@ -119,7 +121,7 @@ export default function Register() {
                   />
                 </div>
               </div>
-              {password && confirm_password && (password === confirm_password ? <h3 style={{color: "green"}}>Passwords Match!</h3> : <h3 style={{color: "red"}} >Passwords Do Not Match!</h3>)} 
+              {errorMessage ? <h3 style={{color: 'red'}}>{errorMessage}</h3>: password && confirm_password && (password === confirm_password ? <h3 style={{color: "green"}}>Passwords Match!</h3> : <h3 style={{color: "red"}} >Passwords Do Not Match!</h3>)} 
               <div>
                 <button
                   type="submit"
