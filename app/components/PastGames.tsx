@@ -1,13 +1,14 @@
 import React from 'react'
 import Scorecard from './Scorecard'
+import { Text } from '@mantine/core';
 
 interface Result {
-    result_id: Number;
-    user_id: Number;
-    game_id: Number;
-    answers: String[];
-    score: Number;
-    date: String;
+    result_id: number;
+    user_id: number;
+    game_id: number;
+    answers: string[];
+    score: number;
+    date: string;
 }
 
 interface Props {
@@ -17,7 +18,9 @@ interface Props {
 const PastGames: React.FC<Props> = ({results}) => {
   return (
     <>
-    <p className="text-xl text-gray-600 mt-10 mb-4 text-center">Past Games</p>
+    <div className='mt-10 mb-5'>
+    <Text size='xl' fw='800'>Past Games</Text>
+    </div>
       <div className="flex items-center gap-4">
         {results.map(result => (
           <Scorecard

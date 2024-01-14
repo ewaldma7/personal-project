@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import { Button } from '@radix-ui/themes';
+import { Button } from '@mantine/core';
 
 interface Question {
   question_id: number;
@@ -65,10 +65,12 @@ const GamePage = () => {
   }
 
   const handleAnswerNext = () => {
-    updateData();
-    setSelectedOption(null);
-    setCurrentQuestion(questions[count + 1]);
-    setCount(count + 1);
+    if (selectedOption != null) {
+      updateData();
+      setSelectedOption(null);
+      setCurrentQuestion(questions[count + 1]);
+      setCount(count + 1);
+    }
   }
 
   const handleAnswerSubmit = async () => {
@@ -115,7 +117,7 @@ const GamePage = () => {
         </div>
 
         <br />
-        <Button size="4" className="mt-10" onClick={count < NUM_QUESTIONS - 1 ? handleAnswerNext : handleAnswerSubmit}>
+        <Button color='gray' size="lg" onClick={count < NUM_QUESTIONS - 1 ? handleAnswerNext : handleAnswerSubmit}>
           {count < NUM_QUESTIONS - 1 ? 'Next Question' : 'Submit Answers'}
         </Button>
       </div>

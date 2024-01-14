@@ -1,36 +1,38 @@
 'use client'
 
-import { Avatar, Card, Grid, Heading, Link, Strong, Text, Theme } from '@radix-ui/themes'
-import React from 'react'
+import { Badge, Card, Center, Group, Text } from '@mantine/core';
+import Link from 'next/link';
 
 interface ScorecardProps {
-    score: String;
-    date: String;
+  score: string;
+  date: string;
 }
 
-const Scorecard: React.FC<ScorecardProps> = ({score, date}) => {
-    return (
-        <Link href={`/results/${date.replace(/\//g, '-')}`}>
-          <Card
-            style={{
-              border: `solid 2px RGB(156, 130, 117)`,
-              backgroundColor: '#d1d5db',
-              display: 'inline-block',
-              margin: '0 8px 8px 0', // Adjust margin as needed for spacing
-            }}
-            size="3"
-            className="rounded-full bg-gray-300 cursor-pointer"
-          >
-            <Grid rows="2" gap="2" display="inline-grid" flow="column">
-              <Avatar variant="solid" radius="full" fallback={score} style={{ margin: 'auto' }} />
-              <Text size="3">
-                <Strong>{date}</Strong>
-              </Text>
-            </Grid>
-          </Card>
-        </Link>
-      );
-      
+const Scorecard: React.FC<ScorecardProps> = ({ score, date }) => {
+  const daysOfWeek = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  const currDate = new Date(date);
+
+  return (
+    <Link href={`/results/${date.replace(/\//g, '-')}`}>
+      <Card
+        style={{
+          border: `solid 2px #A7F6EC`,
+          display: 'inline-block',
+          margin: '0 8px 8px 0', // Adjust margin as needed for spacing
+        }}
+        className="rounded-full cursor-pointer hover:bg-slate-200"
+      >
+        <Center>
+        <Text variant="gradient"  fw={800}>{daysOfWeek[currDate.getDay()]}</Text>
+        </Center>
+        <Group justify="space-between" mt="md" mb="xs">
+          <Badge size='lg' fw={800}>{date}</Badge>
+          <Badge size='lg' color="teal">{score}</Badge>
+        </Group>
+      </Card>
+    </Link>
+  );
+
 }
 
 export default Scorecard

@@ -163,7 +163,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
             <FiStar className="text-4xl mr-4 text-yellow-500" />
             <div>
               <p className="text-xl font-semibold">Average Score</p>
-              <p className="text-gray-600 text-4xl">{avgScore}</p>
+              <p className="text-gray-600 text-4xl">{avgScore.toFixed(2)}</p>
             </div>
           </div>
         </div>

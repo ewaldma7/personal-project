@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Providers from './components/Providers'
 import Navbar from './components/Navbar'
-import { Theme } from '@radix-ui/themes';
 import './globals.css'
-import '@radix-ui/themes/styles.css';
+import '@mantine/core/styles.css';
+import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,13 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body className={inter.className}>
-        <Theme accentColor="bronze" grayColor="sand">
           <Providers>
             <Navbar />
             {children}
           </Providers>
-        </Theme>
       </body>
     </html>
   )
