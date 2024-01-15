@@ -44,14 +44,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
   const [avgScore, setAvgScore] = useState(0);
   const [catMap, setCatMap] = useState<CategoryObject[]>([]);
 
-  function getAvgScore() {
-    if (results.length === 0) {
-      return 0;
-    }
-    const totalScore = results.reduce((sum, result) => sum + result.score, 0);
-    const averageScore = totalScore / results.length;
-    return averageScore;
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,13 +62,23 @@ function UserProfile({ params }: { params: { userId: string } }) {
       }
     }
     fetchData();
-  }, []);
+  }, [params.userId]);
 
   useEffect(() => {
+    function getAvgScore() {
+      if (results.length === 0) {
+        return 0;
+      }
+      const totalScore = results.reduce((sum, result) => sum + result.score, 0);
+      const averageScore = totalScore / results.length;
+      return averageScore;
+    }
+
     const fetchData = async () => {
       try {
         if (results.length !== 0) {
-          setAvgScore(getAvgScore());
+          const avgScore = getAvgScore();
+          setAvgScore(avgScore);
         }
       } catch (error) {
         console.log(error);

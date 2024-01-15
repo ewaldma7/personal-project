@@ -43,7 +43,6 @@ function ResultsPage({ params }: { params: { date: string } }) {
 
     const userId = useSession().data?.user.user_id;
     const [result, setResult] = useState<Result | null>(null);
-    const currDate = new Date(params.date);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [guesses, setGuesses] = useState<Guess[] | undefined>([]);
     const colorMap = new Map<string, string>([
@@ -101,6 +100,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
         if (userId) {
             const fetchData = async () => {
                 try {
+                    const currDate = new Date(params.date);
                     const gameResponse = await axios.get(`http://localhost:3000/api/games/${currDate.toLocaleDateString().replace(/\//g, '-')}`);
                     const gameData = gameResponse.data;
                     setQuestions(gameData.questions);
@@ -114,7 +114,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
             };
             fetchData();
         }
-    }, [userId]);
+    }, [userId, params.date]);
 
     return guesses?.length !== 0 ? (
         <div className=' justify-center items-center ml-20'>

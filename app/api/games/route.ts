@@ -9,16 +9,16 @@ export async function POST(request: NextRequest) {
         if (!validation.success) {
             return NextResponse.json(validation.error.format(), { status: 400 });
         }
-        const existingQuestion = await prisma.game.findUnique({
+        const existingGame = await prisma.game.findUnique({
             where: {
                 game_id: body.game_id
             },
         });
-        if (existingQuestion) {
+        if (existingGame) {
             return NextResponse.json('This game already exists', { status: 400 });
         }
-        const newQuestion = await prisma.question.create({ data: { question: body.question, answer: body.answer, category: body.category } });
-        return NextResponse.json(newQuestion, { status: 201 });
+        const newGame = await prisma.game.create({ data: { date: body.date } });
+        return NextResponse.json(newGame, { status: 201 });
     } catch (error) {
         console.log(error);
         return NextResponse.json('Error creating game', { status: 500 });
