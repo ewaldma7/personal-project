@@ -52,7 +52,7 @@ const Dashboard = () => {
       }
       fetchData();
     }
-  }, [session]);
+  }, [session, previousDates]);
 
   useEffect(() => {
     if (played != null) setLoaded(true);
@@ -67,7 +67,7 @@ const Dashboard = () => {
       <Title fw={800}>Welcome {session?.user.name}!</Title>
       </Container>
       <Container className='mb-5'>
-      <Text  size='xl'>Today's Date: {previousDates[0].toLocaleDateString()}</Text>
+      <Text  size='xl'>Today`&apos;`s Date: {previousDates[0].toLocaleDateString()}</Text>
       </Container>
       
       {/* Final button */}

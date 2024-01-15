@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from "react"
-import axios from "axios";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
@@ -96,7 +95,7 @@ export default function Login() {
             </div>
           </form>
           <div className="mt-4 flex justify-between">
-            <p>Don't have an account?</p>
+            <p>Don`&apos;`t have an account?</p>
             <Link href="/register" className="text-indigo-600 hover:underline">
               Register here.
             </Link>

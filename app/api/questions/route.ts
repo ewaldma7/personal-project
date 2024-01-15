@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         if (existingQuestion) {
             return NextResponse.json('This question already exists', { status: 400 });
         }
-        const newQuestion = await prisma.question.create({ data: { question: body.question, answer: body.answer, category: body.category } });
+        const newQuestion = await prisma.question.create({ data: { question: body.question, choices: body.choices, correctChoice: body.correctChoice, category: body.category } });
         return NextResponse.json(newQuestion, { status: 201 });
     } catch (error) {
         console.log(error);

@@ -41,7 +41,7 @@ const GamePage = () => {
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [todayDate]);
 
   function getGuess() {
     return currentQuestion?.choices[selectedOption as number - 1];
