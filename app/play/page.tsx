@@ -28,6 +28,7 @@ const GamePage = () => {
   const [guesses, setGuesses] = useState(Array(5).fill(''));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [count, setCount] = useState<number>(0);
+  const [stack, setStack] = useState<number[]>([]);
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -66,11 +67,20 @@ const GamePage = () => {
 
   const handleAnswerNext = () => {
     if (selectedOption != null) {
+      setStack((stack) => [...stack, selectedOption]);
       updateData();
       setSelectedOption(null);
       setCurrentQuestion(questions[count + 1]);
       setCount(count + 1);
     }
+  }
+
+  const handleBack = async () => {
+    const num = stack.pop();
+    console.log(num);
+    setSelectedOption(num as number);
+    setCurrentQuestion(questions[count - 1]);
+    setCount(count - 1);
   }
 
   const handleAnswerSubmit = async () => {
@@ -117,9 +127,13 @@ const GamePage = () => {
         </div>
 
         <br />
+        <Button disabled={count === 0} className='mr-5' color='gray' size="lg" onClick={handleBack}>
+          Back
+        </Button>
         <Button color='gray' size="lg" onClick={count < NUM_QUESTIONS - 1 ? handleAnswerNext : handleAnswerSubmit}>
           {count < NUM_QUESTIONS - 1 ? 'Next Question' : 'Submit Answers'}
         </Button>
+       
       </div>
     </div>
   );
