@@ -95,7 +95,7 @@ export default function Login() {
             </div>
           </form>
           <div className="mt-4 flex justify-between">
-            <p>Don`&apos;`t have an account?</p>
+            <p>Don&#39;t have an account?</p>
             <Link href="/register" className="text-indigo-600 hover:underline">
               Register here.
             </Link>

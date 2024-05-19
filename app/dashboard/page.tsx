@@ -67,7 +67,7 @@ const Dashboard = () => {
       <Title fw={800}>Welcome {session?.user.name}!</Title>
       </Container>
       <Container className='mb-5'>
-      <Text  size='xl'>Today`&apos;`s Date: {previousDates[0].toLocaleDateString()}</Text>
+      <Text  size='xl'>Today&#39;s Date: {previousDates[0].toLocaleDateString()}</Text>
       </Container>
       
       {/* Final button */}
