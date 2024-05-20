@@ -1,8 +1,9 @@
 'use client'
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from 'react-icons/fi'; // Import icons
+import { CATEGORY_COLOR_MAP } from '@/constants';
 
 
 
@@ -36,8 +37,9 @@ function UserProfile({ params }: { params: { userId: string } }) {
     isCorrect: boolean;
   }
 
-  type CategoryObject = { category: string; percentage: number };
+  type CategoryObject = { category: string; percentage: number};
 
+  const CATEGORIES = useMemo(() => ['ART', 'ENTERTAINMENT', 'GEOGRAPHY', 'HISTORY', 'SCIENCE', 'SPORTS'], []);
   const [results, setResults] = useState<Result[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [guesses, setGuesses] = useState<Guess[]>([]);
@@ -91,20 +93,16 @@ function UserProfile({ params }: { params: { userId: string } }) {
     const categoryPercentages = Array.from(
       guesses.reduce((stats, guess) => {
         const { category, isCorrect } = guess;
-        stats.set(
-          category,
-          stats.get(category) || { total: 0, correct: 0 }
-        );
         stats.get(category)!.total += 1;
         stats.get(category)!.correct += isCorrect ? 1 : 0;
         return stats;
-      }, new Map<string, { total: number; correct: number }>())
+      }, new Map<string, { total: number; correct: number }>(CATEGORIES.map(category => [category, {total: 0, correct: 0}])))
     ).map(([category, { total, correct }]) => ({
       category,
-      percentage: (correct / total) * 100 || 0,
+      percentage: total === 0 ? NaN : (correct / total) * 100,
     }));
     setCatMap(categoryPercentages);
-  }, [guesses]);
+  }, [guesses, CATEGORIES]);
 
   const [loading, setLoading] = useState(true);
 
@@ -129,8 +127,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
       </div>
     );
   };
-
-  const categories: string[] = Object.keys(catMap);
 
   const renderFriendCard = (friend: any) => (
     <div className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center" key={friend.id}>
@@ -170,15 +166,16 @@ function UserProfile({ params }: { params: { userId: string } }) {
         </div>
       </div>
       <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/2">
-          <h2 className="text-2xl font-bold mb-4">Category Percentages</h2>
+          <h2 className="text-2xl font-bold mb-8">Category Percentages</h2>
           <div className="grid grid-cols-3 gap-4">
             {catMap.map((categoryObj) => (
               <div
                 key={categoryObj.category}
                 className="mb-4 text-center"
               >
-                <span className="block text-xl font-semibold mb-2">{categoryObj.category}</span>
-                <span className="block text-4xl text-blue-600 font-bold">{categoryObj.percentage.toFixed(0)}%</span>
+                <span className={`block text-xl text-${CATEGORY_COLOR_MAP.get(categoryObj.category)}-600 font-semibold mb-2`}>{categoryObj.category}</span>
+                <span className = {`block text-4xl text-${CATEGORY_COLOR_MAP.get(categoryObj.category)}-600 font-bold`}>
+                  {categoryObj.percentage ? `${categoryObj.percentage.toFixed(0)}%` : 'N/A'}</span>
               </div>
             ))}
           </div>
