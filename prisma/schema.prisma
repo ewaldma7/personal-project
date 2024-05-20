@@ -19,8 +19,8 @@ model User {
 }
 
 model Game {
-  game_id   Int        @id @default(autoincrement())
-  date      String     @unique @db.VarChar(30)
+  game_id   Int         @id @default(autoincrement())
+  date      DateTime        @db.Date @unique
   results   Result[]
   questions Question[] @relation("GameToQuestion")
 }

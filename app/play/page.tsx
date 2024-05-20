@@ -34,7 +34,7 @@ const GamePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const game = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/games/${todayDate}`);
+      const game = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/games?date=${todayDate}`);
       setGameId(game.data.game_id);
       setQuestions(game.data.questions);
       setCurrentQuestion(game.data.questions[0]);
