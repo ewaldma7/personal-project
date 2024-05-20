@@ -1,5 +1,6 @@
 import prisma from "@/app/lib/client";
 import { createGameSchema } from "@/app/validationSchemas";
+import { ISODateString } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -27,12 +28,27 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
-        const allGames = await prisma.game.findMany({
-            include: {
-              questions: true,
+        const params = request.nextUrl.searchParams;
+        if (params.size === 0) {
+            const allGames = await prisma.game.findMany({
+                include: {
+                  questions: true,
+                },
+              });          
+            return NextResponse.json(allGames, { status: 200 });
+        }
+        const existingGame = await prisma.game.findUnique({
+            where: {
+                date: new Date(params.get('date') as string)
             },
-          });          
-        return NextResponse.json(allGames, { status: 200 });
+            include: {
+                questions: true
+            }
+        });
+        if (existingGame) {
+            return NextResponse.json(existingGame, {status: 200});
+        }
+        return NextResponse.json('Game with this date does not exist', { status: 400 });
     } catch (error) {
         console.log(error);
         return NextResponse.json('Error retrieving games', { status: 500 });

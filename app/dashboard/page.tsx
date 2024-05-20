@@ -81,7 +81,7 @@ const Dashboard = () => {
       </Link>
       
       {/* Past Games section */}
-      {results?.length > 0 && <PastGames results={results} />}
+      <PastGames results={results} />
     </Container>
   ) : "";
   
