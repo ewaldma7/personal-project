@@ -34,7 +34,7 @@ const GamePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const game = await axios.get(`http://localhost:3000/api/games/${todayDate}`);
+      const game = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/games/${todayDate}`);
       setGameId(game.data.game_id);
       setQuestions(game.data.questions);
       setCurrentQuestion(game.data.questions[0]);
@@ -89,12 +89,12 @@ const GamePage = () => {
     try {
       console.log(guesses)
       const reqBody = { user_id: session?.user.user_id, game_id: gameId, score: score, date: todayDate };
-      const response = await axios.post(`http://localhost:3000/api/results/`, reqBody);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/results/`, reqBody);
       const resultId = response.data.result_id;
       guesses.forEach(guess => {
         guess['result_id'] = resultId;
       });
-      const guessResponse = await axios.post(`http://localhost:3000/api/guesses/`, guesses);
+      const guessResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/guesses/`, guesses);
       router.push(`/results/${todayDate}`);
     } catch (error) {
       console.error(error);

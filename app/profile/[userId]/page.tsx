@@ -48,8 +48,8 @@ function UserProfile({ params }: { params: { userId: string } }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const user = await axios.get(`http://localhost:3000/api/users/${params.userId}`);
-        const resultsResponse = await axios.get(`http://localhost:3000/api/results/${params.userId}/*`);
+        const user = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/${params.userId}`);
+        const resultsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${params.userId}/*`);
         setResults(resultsResponse.data);
         setUser(user.data);
         const allGuesses: Guess[] = resultsResponse.data.reduce((combinedGuesses: Guess[], result: Result) => {

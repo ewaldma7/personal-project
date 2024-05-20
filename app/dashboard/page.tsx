@@ -42,7 +42,7 @@ const Dashboard = () => {
     if (session) {
       const fetchData = async () => {
         try {
-          const results = await axios.get(`http://localhost:3000/api/results/${session.user.user_id}/*`);
+          const results = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`);
           setResults(results.data);
           setPlayed(results.data.length > 0 && (results.data[0].date === convertDate(previousDates[0])))
         } catch (error) {
