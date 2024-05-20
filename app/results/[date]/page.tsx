@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import { Group, Avatar, Text, Accordion, Button, Title, Badge, Grid } from '@mantine/core';
+import { CATEGORY_COLOR_MAP } from '@/constants';
 
 
 interface Result {
@@ -45,14 +46,6 @@ function ResultsPage({ params }: { params: { date: string } }) {
     const [result, setResult] = useState<Result | null>(null);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [guesses, setGuesses] = useState<Guess[] | undefined>([]);
-    const colorMap = new Map<string, string>([
-        ["ENTERTAINMENT", "pink"],
-        ["SPORTS", "orange"],
-        ["ART", "red"],
-        ["SCIENCE", "green"],
-        ["GEOGRAPHY", "blue"],
-        ["HISTORY", "yellow"],
-    ]);
 
     function AccordionLabel({ guess }: AccLabelProps) {
         return (
@@ -64,7 +57,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
                     <Text size='xl'>{questions.find(question => question.question_id === guess.question_id)?.question}</Text>
                 </Grid.Col>
                 <Grid.Col span={1}>
-                <Badge size="lg" color={colorMap.get(guess.category)}>
+                <Badge size="lg" color={CATEGORY_COLOR_MAP.get(guess.category)}>
                     {guess.category}
                 </Badge>
                 </Grid.Col>

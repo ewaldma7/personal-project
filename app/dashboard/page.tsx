@@ -5,7 +5,8 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import axios from 'axios'
 import PastGames from '../components/PastGames'
-import { Button, Container, Text, Title } from '@mantine/core'
+import {Container, rem, Text, Title } from '@mantine/core'
+import { IconCrown } from '@tabler/icons-react'
 
 const Dashboard = () => {
 
@@ -66,10 +67,15 @@ const Dashboard = () => {
   return session && loaded ? (
     <Container className="min-h-screen flex flex-col justify-start items-center pt-16">
       {/* Title */}
-      <Container className='mb-5'>
+      <IconCrown
+      style={{ width: rem(150), height: rem(150) }}
+      stroke={1.5}
+      color="var(--mantine-color-yellow-filled)"
+    />
+      <Container className='mb-8'>
       <Title fw={800}>Welcome {session?.user.name}!</Title>
       </Container>
-      <Container className='mb-5'>
+      <Container className='mb-8'>
       <Text  size='xl'>Today&#39;s Date: {previousDates[0].toLocaleDateString()}</Text>
       </Container>
       
