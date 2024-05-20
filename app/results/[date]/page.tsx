@@ -101,10 +101,10 @@ function ResultsPage({ params }: { params: { date: string } }) {
             const fetchData = async () => {
                 try {
                     const currDate = new Date(params.date);
-                    const gameResponse = await axios.get(`http://localhost:3000/api/games/${currDate.toLocaleDateString().replace(/\//g, '-')}`);
+                    const gameResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/games/${currDate.toLocaleDateString().replace(/\//g, '-')}`);
                     const gameData = gameResponse.data;
                     setQuestions(gameData.questions);
-                    const resultResponse = await axios.get(`http://localhost:3000/api/results/${userId}/${gameData.game_id}`);
+                    const resultResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${userId}/${gameData.game_id}`);
                     const resultData: Result = resultResponse.data;
                     setResult(resultData);
                     setGuesses(resultData.guesses);
