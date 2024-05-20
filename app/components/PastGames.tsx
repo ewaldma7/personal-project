@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import Scorecard from './Scorecard'
 import { Text } from '@mantine/core';

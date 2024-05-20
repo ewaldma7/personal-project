@@ -4,9 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-import { Group, Avatar, Text, Accordion, Button, Title, Badge, Grid } from '@mantine/core';
+import { Avatar, Text, Accordion, Button, Title, Badge, Grid } from '@mantine/core';
 import { CATEGORY_COLOR_MAP } from '@/constants';
-
 
 interface Result {
     result_id: Number;
