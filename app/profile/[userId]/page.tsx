@@ -39,6 +39,15 @@ function UserProfile({ params }: { params: { userId: string } }) {
 
   type CategoryObject = { category: string; percentage: number};
 
+  const COLOR_VARIANTS = {
+    ENTERTAINMENT : 'text-pink-600',
+    SPORTS : 'text-orange-600',
+    ART : 'text-red-600',
+    SCIENCE : 'text-green-600',
+    GEOGRAPHY : 'text-blue-600',
+    HISTORY : 'text-yellow-600',
+}
+
   const CATEGORIES = useMemo(() => ['ART', 'ENTERTAINMENT', 'GEOGRAPHY', 'HISTORY', 'SCIENCE', 'SPORTS'], []);
   const [results, setResults] = useState<Result[]>([]);
   const [user, setUser] = useState<User | null>(null);
