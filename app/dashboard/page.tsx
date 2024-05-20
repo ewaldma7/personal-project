@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import axios from 'axios'
@@ -26,17 +26,21 @@ const Dashboard = () => {
   const [played, setPlayed] = useState<boolean | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
-  const previousDates = getPreviousDates();
 
-  function getPreviousDates() {
+  function getPreviousDates(currentDate : Date) {
     let dates = [];
     for (let i = 0; i <= 4; i++) {
-      let currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() - i);
-      dates.push(currentDate);
+      let date = new Date();
+      date.setDate(currentDate.getDate() - i);
+      dates.push(date);
     }
     return dates;
   }
+
+  const previousDates = useMemo(() => {
+    const currentDate = new Date();
+    return getPreviousDates(currentDate);
+  }, []);
 
   useEffect(() => {
     if (session) {
