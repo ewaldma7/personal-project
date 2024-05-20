@@ -104,7 +104,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
       percentage: (correct / total) * 100 || 0,
     }));
     setCatMap(categoryPercentages);
-    console.log(categoryPercentages);
   }, [guesses]);
 
   const [loading, setLoading] = useState(true);

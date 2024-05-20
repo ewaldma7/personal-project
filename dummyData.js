@@ -38,7 +38,7 @@ async function runMigration(dataType) {
         });
       }
     } else if (dataType === "game") {
-      for (let i=20; i < 21; i++) {
+      for (let i=19; i < 20; i++) {
         const randomQuestions = await prisma.question.findMany({
           take: 5, // Fetch 5 random questions
           skip: Math.floor(Math.random() * 20), // Assuming you have at least 20 questions in the database

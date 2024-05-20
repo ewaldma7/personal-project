@@ -71,9 +71,9 @@ const Dashboard = () => {
       
       {/* Final button */}
       <Link href={played ? `/results/${convertDate(previousDates[0])}` : "/play"}>
-        <Button color='gray' size='xl'>
-          {played ? 'View Results' : 'Play'}
-        </Button>
+      <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 px-6 rounded text-3xl">
+      {played ? 'View Results' : 'Play'}
+      </button>
       </Link>
       
       {/* Past Games section */}
