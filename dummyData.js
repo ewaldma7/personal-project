@@ -12,7 +12,7 @@ async function runMigration(dataType) {
         const first = faker.person.firstName();
         const last = faker.person.lastName();
         const email = faker.internet.email({ firstName: first, lastName: last });
-        const password = "Testing123!"; // Generate a random password
+        const password = process.env.DEFAULT_PASSWORD; // Generate a random password
         const location = faker.location.country();
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -38,7 +38,7 @@ async function runMigration(dataType) {
         });
       }
     } else if (dataType === "game") {
-      for (let i=5; i < 15; i++) {
+      for (let i=20; i < 21; i++) {
         const randomQuestions = await prisma.question.findMany({
           take: 5, // Fetch 5 random questions
           skip: Math.floor(Math.random() * 20), // Assuming you have at least 20 questions in the database
@@ -46,7 +46,7 @@ async function runMigration(dataType) {
         });
         await prisma.game.create({
           data: {
-            date: `1/${i}/2024`,
+            date: `5/${i}/2024`,
             questions: {
               connect: randomQuestions.map(question => ({ question_id: question.question_id })),
             }

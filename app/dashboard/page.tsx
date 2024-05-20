@@ -45,7 +45,6 @@ const Dashboard = () => {
           const results = await axios.get(`http://localhost:3000/api/results/${session.user.user_id}/*`);
           setResults(results.data);
           setPlayed(results.data.length > 0 && (results.data[0].date === convertDate(previousDates[0])))
-          console.log(results.data);
         } catch (error) {
           console.log(error);
         }
