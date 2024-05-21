@@ -37,6 +37,17 @@ export const createGameSchema = z.object({
     questions: z.array(questionSchema)
 });
 
+export const requestFriendSchema = z.object({
+    user_id: z.number(),
+    friend_id: z.number()
+})
+
+export const respondFriendSchema = z.object({
+    user_id: z.number(),
+    friend_id: z.number(),
+    accepted: z.boolean()
+})
+
 //TODO: FIX
 export const createResultSchema = z.object({
     date: z.date(),
