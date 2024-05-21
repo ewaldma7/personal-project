@@ -39,19 +39,28 @@ export async function POST(request: NextRequest) {
         if (!validation.success) {
             return NextResponse.json(validation.error.format(), { status: 400 });
         }
-        const existingRequest = await prisma.friend.findUnique({
+        const requestedFriend = await prisma.user.findUnique({
             where: {
-                user_id_friend_id: {
-                  user_id: body.user_id,
-                  friend_id: body.friend_id
-                }
+                email: body.email
               }
         });
-        if (existingRequest) {
-            return NextResponse.json('You have already requested to be friends with this user', { status: 400 });
+        if (!requestedFriend) {
+            return NextResponse.json('User with this email does not exist', { status: 400 });
         }
-        const newRequest = await prisma.friend.create({ data: { user_id: body.user_id, friend_id: body.friend_id } });
-        const newRequest2 = await prisma.friend.create({ data: { user_id: body.friend_id, friend_id: body.user_id } });
+        const existingFriend = await prisma.friend.findUnique({
+            where: {
+                user_id_friend_id: {
+                    user_id: body.user_id,
+                    friend_id: requestedFriend.user_id
+                }
+            }
+        });
+        if (existingFriend) {
+            const message = existingFriend.status === 'ACCEPTED' ? 'Cannot send request to existing friend' : 'Cannot send request multiple times';
+            return NextResponse.json(message, { status: 400 });
+        }
+        const newRequest = await prisma.friend.create({ data: { user_id: body.user_id, friend_id: requestedFriend.user_id }, include: {friend: true} });
+        const newRequest2 = await prisma.friend.create({ data: { user_id: requestedFriend.user_id, friend_id: body.user_id } });
         return NextResponse.json(newRequest, { status: 201 });
     } catch (error) {
         console.log(error);

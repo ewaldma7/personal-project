@@ -12,6 +12,7 @@
   "dependencies": {
     "@mantine/core": "^7.4.1",
     "@mantine/hooks": "^7.4.1",
+    "@mantine/notifications": "^7.9.2",
     "@prisma/client": "^5.7.1",
     "@radix-ui/themes": "^2.0.3",
     "@tabler/icons-react": "^2.47.0",

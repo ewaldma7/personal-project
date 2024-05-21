@@ -39,7 +39,7 @@ export const createGameSchema = z.object({
 
 export const requestFriendSchema = z.object({
     user_id: z.number(),
-    friend_id: z.number()
+    email: z.string().email()
 })
 
 export const respondFriendSchema = z.object({
