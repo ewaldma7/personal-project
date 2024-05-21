@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from 'react-icons/fi'; // Import icons
 import { CATEGORY_COLOR_MAP } from '@/constants';
 
@@ -54,11 +55,13 @@ function UserProfile({ params }: { params: { userId: string } }) {
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [avgScore, setAvgScore] = useState(0);
   const [catMap, setCatMap] = useState<CategoryObject[]>([]);
-
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const friendsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends/?user_id=${params.userId as string}`);
+        setFriends(friendsResponse.data);
         const user = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/${params.userId}`);
         const resultsResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${params.userId}/*`);
         setResults(resultsResponse.data);
@@ -115,14 +118,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
 
   const [loading, setLoading] = useState(true);
 
-  const [userFriends] = useState([
-    { id: 1, name: 'Friend 1', email: 'testing@gmail.com' },
-    { id: 2, name: 'Friend 2', email: 'testing@gmail.com' },
-    { id: 3, name: 'Friend 3', email: 'testing@gmail.com' },
-    { id: 4, name: 'Friend 4', email: 'testing@gmail.com' },
-    { id: 5, name: 'Friend 5', email: 'testing@gmail.com' },
-  ]);
-
   const renderAvatar = (name: string) => {
     const initials = name
       .split(' ')
@@ -138,13 +133,15 @@ function UserProfile({ params }: { params: { userId: string } }) {
   };
 
   const renderFriendCard = (friend: any) => (
-    <div className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center" key={friend.id}>
+    <Link  key={friend.user_id} href={`/profile/${friend.user_id}`}>
+    <div className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center">
       {renderAvatar(friend.name)}
       <div className="ml-4">
         <h3 className="text-lg font-semibold">{friend.name}</h3>
-        <p className="text-gray-500">{friend.email}</p>
+        <p className="text-gray-500">{friend.location}</p>
       </div>
     </div>
+    </Link>
   );
 
   return (
@@ -184,7 +181,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
               >
                 <span className={`block text-xl text-${CATEGORY_COLOR_MAP.get(categoryObj.category)}-600 font-semibold mb-2`}>{categoryObj.category}</span>
                 <span className = {`block text-4xl text-${CATEGORY_COLOR_MAP.get(categoryObj.category)}-600 font-bold`}>
-                  {categoryObj.percentage ? `${categoryObj.percentage.toFixed(0)}%` : 'N/A'}</span>
+                  {!Number.isNaN(categoryObj.percentage) ? `${categoryObj.percentage.toFixed(0)}%` : 'N/A'}</span>
               </div>
             ))}
           </div>
@@ -193,7 +190,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
       <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
         <h2 className="text-2xl font-bold mb-4">Friends</h2>
         <div className="text-gray-600 max-h-72 overflow-y-auto">
-          {userFriends.map((friend) => renderFriendCard(friend))}
+          {friends.map((friend: any) => renderFriendCard(friend.friend))}
         </div>
         <button className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded">
           <FiUsers className="mr-2" style={{ display: 'inline' }} /> Add Friends

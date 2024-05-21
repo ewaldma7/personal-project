@@ -1,9 +1,9 @@
 'use client'
-import { Menu, Button, Text, rem, Avatar } from '@mantine/core';
+import { Menu, Text, rem, Avatar } from '@mantine/core';
 import {
     IconSearch,
     IconTrash,
-    IconArrowsLeftRight,
+    IconBell,
 } from '@tabler/icons-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -19,7 +19,7 @@ const ProfileMenu: React.FC<MenuProps> = ({ name }) => {
         router.push("/");
     }
     return (
-        <Menu shadow="md" width={200} trigger="hover" openDelay={100} closeDelay={100}>
+        <Menu shadow="md" width={250} trigger="hover" openDelay={100} closeDelay={100}>
             <Menu.Target>
                 <Avatar>{name[0]}</Avatar>
             </Menu.Target>
@@ -36,9 +36,9 @@ const ProfileMenu: React.FC<MenuProps> = ({ name }) => {
                     Search
                 </Menu.Item>
                 <Menu.Item
-                    leftSection={<IconArrowsLeftRight style={{ width: rem(14), height: rem(14) }} />}
+                    leftSection={<IconBell style={{ width: rem(14), height: rem(14) }} />}
                 >
-                    Transfer my data
+                    Notifications
                 </Menu.Item>
                 <Menu.Item
                     color="red"
