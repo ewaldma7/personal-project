@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 async function runMigration(dataType) {
   try {
     if (dataType === "user") {
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 5; i++) {
         const first = faker.person.firstName();
         const last = faker.person.lastName();
         const email = faker.internet.email({ firstName: first, lastName: last });
@@ -65,4 +65,4 @@ async function runMigration(dataType) {
   }
 }
 
-runMigration("game");
+runMigration("user");

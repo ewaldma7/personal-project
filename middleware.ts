@@ -1,3 +1,3 @@
 export { default } from "next-auth/middleware"
 
-export const config = {matcher: ['/UserPost', '/dashboard', '/play', '/profile', '/profile/:path*']}
+export const config = {matcher: ['/dashboard', '/play', '/profile', '/profile/:path*']}

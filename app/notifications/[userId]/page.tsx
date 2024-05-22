@@ -7,6 +7,8 @@ import { Status } from "@prisma/client";
 import { rem, Text, Title } from "@mantine/core";
 import { IconBell, IconCheck } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
+import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 
 function Notifications({ params }: { params: { userId: string } }) {
   interface User {
@@ -28,6 +30,7 @@ function Notifications({ params }: { params: { userId: string } }) {
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [user, setUser] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +42,7 @@ function Notifications({ params }: { params: { userId: string } }) {
           `${process.env.NEXT_PUBLIC_API_URL}/users/${params.userId}`
         );
         setUser(user.data);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -93,6 +97,7 @@ function Notifications({ params }: { params: { userId: string } }) {
   </div>
   );
   return (
+    !loading &&
     <div className="mx-20">
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <IconBell color='#A16207' style={{ width: rem(28), height: rem(28), marginRight: '0.5rem' }} />
@@ -102,7 +107,7 @@ function Notifications({ params }: { params: { userId: string } }) {
         {friends.map(friend => renderFriendCard(friend.friend))}
       </div>
     </div>
-  );
+    );
 }
 
 export default Notifications;
