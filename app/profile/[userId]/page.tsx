@@ -9,6 +9,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { Modal, TextInput, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
+import { useSession } from "next-auth/react";
 
 function UserProfile({ params }: { params: { userId: string } }) {
   interface User {
@@ -63,6 +64,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
   const [opened, { open, close }] = useDisclosure(false);
   const [requestEmail, setRequestEmail] = useState("");
   const [error, setError] = useState("");
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +72,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
         const friendsResponse = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/friends/?user_id=${
             params.userId as string
-          }`
+          }/&status=${"ACCEPTED"}`
         );
         setFriends(friendsResponse.data);
         const user = await axios.get(
@@ -281,13 +283,15 @@ function UserProfile({ params }: { params: { userId: string } }) {
                 Send
               </button>
             </Modal>
-            <button
-              onClick={open}
-              className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded"
-            >
-              <FiUsers className="mr-2" style={{ display: "inline" }} /> Add
-              Friends
-            </button>
+            {session?.user.user_id === parseInt(params.userId)  &&
+              <button
+                onClick={open}
+                className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded"
+              >
+                <FiUsers className="mr-2" style={{ display: "inline" }} /> Add
+                Friends
+              </button>
+            }
           </div>
         </div>
       </>
