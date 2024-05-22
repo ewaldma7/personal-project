@@ -1,8 +1,9 @@
-import prisma from "@/app/lib/client";
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 async function loadQuestions() {
     try {
-        const response = await fetch("https://opentdb.com/api.php?amount=5&category=10");
+        const response = await fetch("https://opentdb.com/api.php?amount=5&category=17");
         const data = await response.json();
         const results = data.results;
         for (const result of results) {
@@ -10,7 +11,7 @@ async function loadQuestions() {
                 question: result.question,
                 choices: [...result.incorrect_answers, result.correct_answer],
                 correctChoice: result.correct_answer,
-                category: 'ENTERTAINMENT'
+                category: 'SCIENCE'
             };
         
             try {

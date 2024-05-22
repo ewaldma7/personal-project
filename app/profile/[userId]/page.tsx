@@ -234,7 +234,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
               {catMap.map((categoryObj) => (
                 <div key={categoryObj.category} className="mb-4 text-center">
                   <span
-                    className={`block text-xl text-${CATEGORY_COLOR_MAP.get(
+                    className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl text-${CATEGORY_COLOR_MAP.get(
                       categoryObj.category
                     )}-600 font-semibold mb-2`}
                   >
