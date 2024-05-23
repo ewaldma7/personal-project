@@ -15,7 +15,7 @@ const Navbar = () => {
   const links = [
     {label: 'Dashboard', href: "/dashboard"},
     {label: 'Profile', href: `/profile/${session?.user.user_id}`},
-    {label: 'Notifications', href: `/notifications/${session?.user.user_id}`},
+    {label: 'Notifications', href: `/notifications`},
     {label: 'Leaderboard', href: "/leaderboard"},
   ]
   const pathname = usePathname();
