@@ -54,7 +54,6 @@ const GamePage = () => {
   const updateData = () => {
     guesses[count] = {question_id: currentQuestion?.question_id, category: currentQuestion?.category, guess: getGuess(), isCorrect: isCorrect(), user_id: session?.user.user_id }
     setGuesses(guesses);
-    console.log(guesses);
   }
 
 
@@ -77,7 +76,6 @@ const GamePage = () => {
 
   const handleBack = async () => {
     const num = stack.pop();
-    console.log(num);
     setSelectedOption(num as number);
     setCurrentQuestion(questions[count - 1]);
     setCount(count - 1);
@@ -87,7 +85,6 @@ const GamePage = () => {
     updateData();
     const score = calculateScore();
     try {
-      console.log(guesses)
       const reqBody = { user_id: session?.user.user_id, game_id: gameId, score: score, date: todayDate };
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/results/`, reqBody);
       const resultId = response.data.result_id;
