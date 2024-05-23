@@ -3,12 +3,13 @@
 import React from 'react'
 import Scorecard from './Scorecard'
 import { Text } from '@mantine/core';
+import { Guess } from '@prisma/client';
 
 interface Result {
     result_id: number;
     user_id: number;
     game_id: number;
-    answers: string[];
+    guesses: Guess[];
     score: number;
     date: string;
 }
@@ -26,9 +27,8 @@ const PastGames: React.FC<Props> = ({results}) => {
       <div className="flex items-center gap-4">
         {results.map(result => (
           <Scorecard
-            key={String(result.game_id) + String(result.user_id)}
-            score={String(result.score)}
-            date={result.date}
+            key={String(result.result_id)}
+            result={result}
           />
         ))}
       </div>
