@@ -3,19 +3,14 @@
 import React from 'react'
 import Scorecard from './Scorecard'
 import { Text } from '@mantine/core';
-import { Guess } from '@prisma/client';
+import { Guess, Result } from '@prisma/client';
 
-interface Result {
-    result_id: number;
-    user_id: number;
-    game_id: number;
+interface ExtendedResult extends Result {
     guesses: Guess[];
-    score: number;
-    date: string;
 }
 
 interface Props {
-    results: Result[];
+    results: ExtendedResult[];
 }
 
 const PastGames: React.FC<Props> = ({results}) => {
