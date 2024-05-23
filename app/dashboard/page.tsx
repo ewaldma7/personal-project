@@ -7,17 +7,13 @@ import axios from 'axios'
 import PastGames from '../components/PastGames'
 import {Container, rem, Text, Title } from '@mantine/core'
 import { IconCrown } from '@tabler/icons-react'
+import { Result, Guess } from '@prisma/client'
+
+interface ExtendedResult extends Result {
+  guesses: Guess[];
+}
 
 const Dashboard = () => {
-
-  interface Result {
-    result_id: number;
-    user_id: number;
-    game_id: number;
-    answers: string[];
-    score: number;
-    date: string;
-}
 
   function convertDate(date: Date) {
     return date.toLocaleDateString().replace(/\//g, '-');
@@ -26,7 +22,7 @@ const Dashboard = () => {
   const { data: session } = useSession();
   const [played, setPlayed] = useState<boolean | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<ExtendedResult[]>([]);
 
   function getPreviousDates(currentDate : Date) {
     let dates = [];
