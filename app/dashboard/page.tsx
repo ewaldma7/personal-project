@@ -61,30 +61,30 @@ const Dashboard = () => {
 
 
   return session && loaded ? (
-    <Container className="min-h-screen flex flex-col justify-start items-center pt-16">
+    <div className="min-h-screen flex flex-col justify-start items-center pt-16 px-4 sm:px-8 md:px-16 lg:px-24">
       {/* Title */}
       <IconCrown
-      style={{ width: rem(150), height: rem(150) }}
-      stroke={1.5}
-      color="var(--mantine-color-yellow-filled)"
-    />
-      <Container className='mb-8'>
-      <Title fw={800}>Welcome {session?.user.name}!</Title>
-      </Container>
-      <Container className='mb-8'>
-      <Text  size='xl'>Today&#39;s Date: {previousDates[0].toLocaleDateString()}</Text>
-      </Container>
-      
+        className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 mb-8"
+        stroke={1.5}
+        color="var(--mantine-color-yellow-filled)"
+      />
+      <div className="mb-8 text-center">
+        <Title className="font-extrabold">Welcome {session?.user.name}!</Title>
+      </div>
+      <div className="mb-8 text-center">
+        <Text size='xl' fw='300'>Today{`'`}s Date: {previousDates[0].toLocaleDateString()}</Text>
+      </div>
+
       {/* Final button */}
       <Link href={played ? `/results/${convertDate(previousDates[0])}` : "/play"}>
-      <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 px-6 rounded text-3xl">
-      {played ? 'View Results' : 'Play'}
-      </button>
+        <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 px-6 rounded text-xl sm:text-2xl md:text-3xl">
+          {played ? 'View Results' : 'Play'}
+        </button>
       </Link>
-      
+
       {/* Past Games section */}
       <PastGames results={results} />
-    </Container>
+    </div>
   ) : "";
   
 }
