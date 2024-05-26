@@ -32,6 +32,7 @@ const Scorecard: React.FC<ScorecardProps> = ({ result }) => {
           border: '2px solid #A7F6EC',
           cursor: 'pointer',
           transition: 'transform 0.2s, background-color 0.2s',
+          maxWidth: '250px'
         }}
         className="hover:bg-slate-100 hover:shadow-lg hover:transform hover:scale-105"
       >
@@ -40,11 +41,11 @@ const Scorecard: React.FC<ScorecardProps> = ({ result }) => {
             {daysOfWeek[currDate.getDay()]}
           </Text>
         </Center>
-        <Group  mt="md" mb="xs" >
+        <Group  mt="md" mb="xs">
           <Badge size="lg" variant="filled" color="teal" fw={800} className='mx-auto'>
             {result.date}
           </Badge>
-          <Rating emptySymbol={getIcon} fullSymbol={getIcon} />
+          <Rating emptySymbol={getIcon} fullSymbol={getIcon} className='mx-auto' />
         </Group>
       </Card>
     </Link>

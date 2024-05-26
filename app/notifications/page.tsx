@@ -95,7 +95,7 @@ function Notifications() {
 
   const renderFriendCard = (friend: User) => (
     <div
-      key={friend.user_id}
+      key={friend?.user_id}
       className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center justify-between"
     >
       <div className="flex items-center">
@@ -134,7 +134,7 @@ function Notifications() {
           <Title style={{ color: "#A16207" }}>Friend Requests </Title>
         </div>
         <div className="mt-5">
-          {friends.map((friend) => renderFriendCard(friend.friend))}
+          {friends.length !== 0 ? friends.map((friend) => renderFriendCard(friend.friend)) : <Text size='xl' fw='300'>No current requests!</Text>}
         </div>
       </div>
     )

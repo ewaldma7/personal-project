@@ -174,7 +174,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
         `${process.env.NEXT_PUBLIC_API_URL}/friends`,
         { user_id: user?.user_id, email: requestEmail }
       );
-      console.log(response.data);
       notifications.show({
         onClose: () => setError(""),
         title: "Success!",
