@@ -8,12 +8,12 @@ import {
   Avatar,
   Text,
   Accordion,
-  Button,
   Title,
   Badge,
   Grid,
 } from "@mantine/core";
 import { CATEGORY_COLOR_MAP } from "@/constants";
+import { useRouter } from "next/navigation";
 
 interface Result {
   result_id: Number;
@@ -52,6 +52,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
   const [result, setResult] = useState<Result | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [guesses, setGuesses] = useState<Guess[] | undefined>([]);
+  const router = useRouter();
 
   function AccordionLabel({ guess }: AccLabelProps) {
     return (
@@ -121,7 +122,10 @@ function ResultsPage({ params }: { params: { date: string } }) {
   ));
 
   useEffect(() => {
-    if (userId) {
+    if (new Date(params.date) > new Date()) {
+      router.push("/dashboard");
+    }
+    else if (userId) {
       const fetchData = async () => {
         try {
           const currDate = new Date(params.date);
@@ -136,15 +140,19 @@ function ResultsPage({ params }: { params: { date: string } }) {
             `${process.env.NEXT_PUBLIC_API_URL}/results/${userId}/${gameData.game_id}`
           );
           const resultData: Result = resultResponse.data;
-          setResult(resultData);
-          setGuesses(resultData.guesses);
+          if (Object.keys(resultData).length === 0) {
+            router.push("/dashboard")
+          } else {
+            setResult(resultData);
+            setGuesses(resultData.guesses);
+          }
         } catch (error) {
           console.log(error);
         }
       };
       fetchData();
     }
-  }, [userId, params.date]);
+  }, [userId, params.date, router]);
 
   return guesses?.length !== 0 ? (
     <div className=" justify-center items-center ml-20">
