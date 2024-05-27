@@ -32,9 +32,6 @@ export async function GET(request: NextRequest) {
       user_id: parseInt(user_id),
       status: status as Status,
     };
-    if (status === "PENDING") {
-      whereFilter.user_requested = false;
-    }
     const friends = await prisma.friend.findMany({
       where: whereFilter,
       include: {

@@ -4,11 +4,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { Status } from "@prisma/client";
-import { rem, Text, Title } from "@mantine/core";
+import { Text, Title, SegmentedControl } from "@mantine/core";
 import { IconBell, IconCheck } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 function Notifications() {
   interface User {
@@ -29,8 +28,10 @@ function Notifications() {
   }
 
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
   const [user, setUser] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [value, setValue] = useState("r");
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -55,19 +56,16 @@ function Notifications() {
     };
     fetchData();
   }, [session]);
-  const renderAvatar = (name: string) => {
-    const initials = name
-      .split(" ")
-      .map((part) => part.charAt(0))
-      .join("")
-      .toUpperCase();
 
-    return (
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 text-gray-700">
-        {initials}
-      </div>
-    );
-  };
+  useEffect(() => {
+    if (value === "r") {
+      //received
+      setFilteredFriends(friends.filter((friend) => !friend.user_requested));
+    } else if (value === "s") {
+      //sent
+      setFilteredFriends(friends.filter((friend) => friend.user_requested));
+    }
+  }, [value, friends, session]);
 
   const answerRequest = async (
     friend_id: number,
@@ -93,10 +91,24 @@ function Notifications() {
     }
   };
 
+  const renderAvatar = (name: string) => {
+    const initials = name
+      .split(" ")
+      .map((part) => part.charAt(0))
+      .join("")
+      .toUpperCase();
+
+    return (
+      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300 text-gray-700">
+        {initials}
+      </div>
+    );
+  };
+
   const renderFriendCard = (friend: User) => (
     <div
       key={friend?.user_id}
-      className="bg-white shadow-md rounded-lg p-4 mb-4 flex items-center justify-between"
+      className="bg-white shadow-md rounded-lg p-4 mb-4 flex flex-wrap items-center justify-between"
     >
       <div className="flex items-center">
         {renderAvatar(friend.name)}
@@ -107,34 +119,52 @@ function Notifications() {
           <p className="text-gray-500">{friend.email}</p>
         </div>
       </div>
-      <div>
-        <button
-          onClick={() => answerRequest(friend.user_id, friend.name, true)}
-          className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
-        >
-          Accept
-        </button>
-        <button
-          onClick={() => answerRequest(friend.user_id, friend.name, false)}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Decline
-        </button>
-      </div>
+      {value === "r" && (
+        <div className="mt-2 sm:mt-0">
+          <button
+            onClick={() => answerRequest(friend.user_id, friend.name, true)}
+            className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
+          >
+            Accept
+          </button>
+          <button
+            onClick={() => answerRequest(friend.user_id, friend.name, false)}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Decline
+          </button>
+        </div>
+      )}
     </div>
   );
+
   return (
     !loading && (
-      <div className="mx-20">
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <IconBell
+      <div className="mx-4 sm:mx-10 lg:mx-20">
+        <div className="flex flex-wrap items-center">
+          <IconBell className="text-[#A16207] w-6 h-6 sm:w-7 sm:h-7 mr-2 sm:mr-3" />
+          <Title className="text-[#A16207]" size="lg">
+            Friend Requests
+          </Title>
+          <SegmentedControl
+            className="ml-auto mt-2 sm:mt-0 w-full sm:w-auto"
             color="#A16207"
-            style={{ width: rem(28), height: rem(28), marginRight: "0.5rem" }}
+            value={value}
+            onChange={setValue}
+            data={[
+              { label: "Received", value: "r" },
+              { label: "Sent", value: "s" },
+            ]}
           />
-          <Title style={{ color: "#A16207" }}>Friend Requests </Title>
         </div>
         <div className="mt-5">
-          {friends.length !== 0 ? friends.map((friend) => renderFriendCard(friend.friend)) : <Text size='xl' fw='300'>No current requests!</Text>}
+          {filteredFriends.length !== 0 ? (
+            filteredFriends.map((friend) => renderFriendCard(friend.friend))
+          ) : (
+            <Text size="xl" fw="300">
+              No current requests!
+            </Text>
+          )}
         </div>
       </div>
     )
