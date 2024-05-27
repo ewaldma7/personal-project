@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [guessed, setGuessed] = useState(false);
   const validPassword = true; //NEED TO CHANGE
+  const router = useRouter();
 
   const logIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ export default function Login() {
     });
     if (res?.ok) {
       // Login successful
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
       console.log("Login successful");
     } else {
       // Login failed

@@ -3,6 +3,8 @@
 import { useState } from "react"
 import axios from "axios";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
     const [name, setName] = useState("");
@@ -11,6 +13,23 @@ export default function Register() {
     const [confirm_password, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const validPassword = (password && confirm_password && (password === confirm_password)) ? true : false;
+    const router = useRouter();
+    
+    const logIn = async () => {
+      const res = await signIn("credentials", {
+        username: email,
+        password: password,
+        redirect: false,
+        callbackUrl: "/dashboard"
+      });
+      if (res?.ok) {
+        // Login successful
+        router.push("/dashboard");
+      } else {
+        // Login failed
+        console.error("Login failed");
+      }
+    }
 
     const registerUser = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,8 +39,7 @@ export default function Register() {
             email: email,
             password: password
           });
-          console.log("Success: ", response.data);
-          window.location.assign("/login")
+          await logIn();
         } catch (error: any) {
           console.error("Error: ", error);
           setErrorMessage(error.response.data.password._errors[0]);

@@ -6,8 +6,6 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { CATEGORY_COLOR_MAP } from "@/constants";
 
-
-
 interface Question {
   question_id: number;
   question: string;
@@ -42,6 +40,22 @@ const GamePage = () => {
   const router = useRouter();
   const { data: session } = useSession();
 
+  //reroute to result page if already played
+
+  useEffect(() => {
+    const checkIfPlayed = async () => {
+      const result = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${session?.user.user_id}/${gameId}`);
+      if (Object.keys(result.data).length) {
+        router.push(`/results/${todayDate}`)
+      } else {
+        setLoading(false);
+      }
+    }
+    if (session != null && gameId != null) {
+      checkIfPlayed();
+    }
+  }, [gameId, session, router, todayDate])
+
   useEffect(() => {
     const fetchData = async () => {
       const game = await axios.get(
@@ -50,7 +64,6 @@ const GamePage = () => {
       setGameId(game.data.game_id);
       setQuestions(game.data.questions);
       setCurrentQuestion(game.data.questions[0]);
-      setLoading(false);
     };
     fetchData();
   }, [todayDate]);
@@ -102,7 +115,7 @@ const GamePage = () => {
         date: todayDate,
       };
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/results/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/results/*/*`,
         reqBody
       );
       const resultId = response.data.result_id;
