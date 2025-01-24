@@ -42,15 +42,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
 
   type CategoryObject = { category: string; percentage: number };
 
-  const COLOR_VARIANTS = {
-    ENTERTAINMENT: "text-pink-600",
-    SPORTS: "text-orange-600",
-    ART: "text-red-600",
-    SCIENCE: "text-green-600",
-    GEOGRAPHY: "text-blue-600",
-    HISTORY: "text-yellow-600",
-  };
-
   const CATEGORIES = useMemo(
     () => ["ART", "ENTERTAINMENT", "GEOGRAPHY", "HISTORY", "SCIENCE", "SPORTS"],
     []
@@ -282,7 +273,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
                 Send
               </button>
             </Modal>
-            {session?.user.user_id === parseInt(params.userId)  &&
+            {session?.user.user_id === parseInt(params.userId) && (
               <button
                 onClick={open}
                 className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded"
@@ -290,7 +281,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
                 <FiUsers className="mr-2" style={{ display: "inline" }} /> Add
                 Friends
               </button>
-            }
+            )}
           </div>
         </div>
       </>

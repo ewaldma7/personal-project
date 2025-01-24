@@ -16,45 +16,49 @@ interface Question {
   updatedAt: Date | null;
 }
 
+interface Guess {
+  question_id?: number;
+  category?: string;
+  guess?: string;
+  isCorrect?: boolean;
+  user_id?: number;
+  result_id?: number;
+}
+
 type id = number | null;
 
 const GamePage = () => {
-  const COLOR_VARIANTS = {
-    ENTERTAINMENT: "text-pink-600",
-    SPORTS: "text-orange-600",
-    ART: "text-red-600",
-    SCIENCE: "text-green-600",
-    GEOGRAPHY: "text-blue-600",
-    HISTORY: "text-yellow-600",
-  };
   const NUM_QUESTIONS = 5;
+  const todayDate = new Date().toLocaleDateString().replace(/\//g, "-");
+  const router = useRouter();
+  const { data: session } = useSession();
+
   const [gameId, setGameId] = useState<id>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const todayDate = new Date().toLocaleDateString().replace(/\//g, "-");
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [guesses, setGuesses] = useState(Array(5).fill(""));
+  const [guesses, setGuesses] = useState<Guess[]>(Array(5).fill({}));
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [count, setCount] = useState<number>(0);
   const [arr, setArr] = useState<(number | null)[]>(new Array(5).fill(null));
-  const router = useRouter();
-  const { data: session } = useSession();
 
   //reroute to result page if already played
 
   useEffect(() => {
     const checkIfPlayed = async () => {
-      const result = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${session?.user.user_id}/${gameId}`);
+      const result = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/results/${session?.user.user_id}/${gameId}`
+      );
       if (Object.keys(result.data).length) {
-        router.push(`/results/${todayDate}`)
+        router.push(`/results/${todayDate}`);
       } else {
         setLoading(false);
       }
-    }
-    if (session != null && gameId != null) {
+    };
+    if (session && gameId) {
       checkIfPlayed();
     }
-  }, [gameId, session, router, todayDate])
+  }, [gameId, session, router, todayDate]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,14 +81,23 @@ const GamePage = () => {
   }
 
   const updateData = () => {
-    guesses[count] = {
-      question_id: currentQuestion?.question_id,
-      category: currentQuestion?.category,
+    if (
+      !currentQuestion ||
+      selectedOption === null ||
+      !session?.user?.user_id
+    ) {
+      return;
+    }
+
+    const newGuesses = [...guesses];
+    newGuesses[count] = {
+      question_id: currentQuestion.question_id,
+      category: currentQuestion.category,
       guess: getGuess(),
       isCorrect: isCorrect(),
-      user_id: session?.user.user_id,
+      user_id: session.user.user_id,
     };
-    setGuesses(guesses);
+    setGuesses(newGuesses);
   };
 
   const calculateScore = () => {
@@ -94,24 +107,29 @@ const GamePage = () => {
   };
 
   const handleAnswerNext = () => {
-    // if (selectedOption != null) {
-      arr[count] = selectedOption;
-      setArr(arr);
-      updateData();
-      setSelectedOption(arr[count+1]);
-      setCurrentQuestion(questions[(count + 1) % NUM_QUESTIONS]);
-      setCount((count + 1) % NUM_QUESTIONS);
-    // }
+    if (selectedOption === null) return;
+
+    const newArr = [...arr];
+    newArr[count] = selectedOption;
+    setArr(newArr);
+
+    updateData();
+    setSelectedOption(arr[count + 1]);
+    setCurrentQuestion(questions[(count + 1) % NUM_QUESTIONS]);
+    setCount((count + 1) % NUM_QUESTIONS);
   };
 
   const handleAnswerSubmit = async () => {
+    if (!session?.user.user_id || !gameId) return;
+
     updateData();
     const score = calculateScore();
+
     try {
       const reqBody = {
-        user_id: session?.user.user_id,
+        user_id: session.user.user_id,
         game_id: gameId,
-        score: score,
+        score,
         date: todayDate,
       };
       const response = await axios.post(
@@ -132,12 +150,27 @@ const GamePage = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-xl">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     !loading && (
       <div className="flex justify-center items-center mt-12">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-6">Question {count + 1}</h1>
-          <p className= {`font-semibold text-2xl mb-6 text-${CATEGORY_COLOR_MAP.get(currentQuestion?.category as string)}-600`}> Category: {currentQuestion?.category}</p>
+          <p
+            className={`font-semibold text-2xl mb-6 text-${CATEGORY_COLOR_MAP.get(
+              currentQuestion?.category as string
+            )}-600`}
+          >
+            {" "}
+            Category: {currentQuestion?.category}
+          </p>
           <p className="text-2xl mb-6">{currentQuestion?.question}</p>
 
           {/* Render answer choices as styled buttons */}
@@ -172,8 +205,8 @@ const GamePage = () => {
               }
               className={`text-white font-bold py-2 px-4 rounded ${
                 count === NUM_QUESTIONS - 1 && selectedOption === null
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-gray-500 hover:bg-gray-600'
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-gray-500 hover:bg-gray-600"
               }`}
             >
               {count < NUM_QUESTIONS - 1 ? "Next Question" : "Submit Answers"}
