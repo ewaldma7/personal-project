@@ -1,22 +1,21 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect, useMemo } from 'react'
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
-import axios from 'axios'
-import PastGames from '../components/PastGames'
-import {Container, rem, Text, Title } from '@mantine/core'
-import { IconCrown } from '@tabler/icons-react'
-import { Result, Guess } from '@prisma/client'
+import React, { useState, useEffect, useMemo } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import axios from "axios";
+import PastGames from "../components/PastGames";
+import { Container, rem, Text, Title } from "@mantine/core";
+import { IconCrown } from "@tabler/icons-react";
+import { Result, Guess } from "@prisma/client";
 
 interface ExtendedResult extends Result {
   guesses: Guess[];
 }
 
 const Dashboard = () => {
-
   function convertDate(date: Date) {
-    return date.toLocaleDateString().replace(/\//g, '-');
+    return date.toLocaleDateString().replace(/\//g, "-");
   }
 
   const { data: session } = useSession();
@@ -24,7 +23,7 @@ const Dashboard = () => {
   const [loaded, setLoaded] = useState(false);
   const [results, setResults] = useState<ExtendedResult[]>([]);
 
-  function getPreviousDates(currentDate : Date) {
+  function getPreviousDates(currentDate: Date) {
     let dates = [];
     for (let i = 0; i <= 4; i++) {
       let date = new Date();
@@ -43,22 +42,25 @@ const Dashboard = () => {
     if (session) {
       const fetchData = async () => {
         try {
-          const results = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`);
+          const results = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`
+          );
           setResults(results.data);
-          setPlayed(results.data.length > 0 && (results.data[0].date === convertDate(previousDates[0])))
+          setPlayed(
+            results.data.length > 0 &&
+              results.data[0].date === convertDate(previousDates[0])
+          );
         } catch (error) {
           console.log(error);
         }
-      }
+      };
       fetchData();
     }
   }, [session, previousDates]);
 
   useEffect(() => {
     if (played != null) setLoaded(true);
-  }, [played])
-
-
+  }, [played]);
 
   return session && loaded ? (
     <div className="min-h-screen flex flex-col justify-start items-center pt-16 px-4 sm:px-8 md:px-16 lg:px-24">
@@ -72,21 +74,26 @@ const Dashboard = () => {
         <Title className="font-extrabold">Welcome {session?.user.name}!</Title>
       </div>
       <div className="mb-8 text-center">
-        <Text size='xl' fw='300'>Today{`'`}s Date: {previousDates[0].toLocaleDateString()}</Text>
+        <Text size="xl" fw="300">
+          Today{`'`}s Date: {previousDates[0].toLocaleDateString()}
+        </Text>
       </div>
 
       {/* Final button */}
-      <Link href={played ? `/results/${convertDate(previousDates[0])}` : "/play"}>
+      <Link
+        href={played ? `/results/${convertDate(previousDates[0])}` : "/play"}
+      >
         <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 px-6 rounded text-xl sm:text-2xl md:text-3xl">
-          {played ? 'View Results' : 'Play'}
+          {played ? "View Results" : "Play"}
         </button>
       </Link>
 
       {/* Past Games section */}
-      <PastGames results={results} />
+      <PastGames results={results.slice(0, 5)} />
     </div>
-  ) : "";
-  
-}
+  ) : (
+    ""
+  );
+};
 
-export default Dashboard
+export default Dashboard;
