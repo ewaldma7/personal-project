@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,37 +9,67 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [guessed, setGuessed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const validPassword = true; //NEED TO CHANGE
   const router = useRouter();
 
   const logIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await signIn("credentials", {
-      username: email,
-      password: password,
-      redirect: false,
-      callbackUrl: "/dashboard"
-    });
-    if (res?.ok) {
-      // Login successful
-      router.push("/dashboard");
-      console.log("Login successful");
-    } else {
-      // Login failed
-      setGuessed(true);
-      console.error("Login failed");
+    setIsLoading(true);
+    try {
+      const res = await signIn("credentials", {
+        username: email,
+        password: password,
+        redirect: false,
+        callbackUrl: "/dashboard",
+      });
+      if (res?.ok) {
+        // Login successful
+        router.push("/dashboard");
+        console.log("Login successful");
+      } else {
+        // Login failed
+        setGuessed(true);
+        console.error("Login failed");
+      }
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-lg shadow-lg flex items-center space-x-3">
+              <svg
+                className="animate-spin h-5 w-5 text-indigo-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span className="text-indigo-600 font-medium">Logging in...</span>
+            </div>
+          </div>
+        )}
+
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-            alt="Your Company"
-          />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Log in to your account
           </h2>
@@ -47,9 +77,11 @@ export default function Login() {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={logIn}>
-
             <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Email address
               </label>
               <div className="mt-2">
@@ -68,10 +100,15 @@ export default function Login() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Password
                 </label>
-                {guessed && <h3 style={{color: "red"}} >Invalid Email or Password</h3>}
+                {guessed && (
+                  <h3 style={{ color: "red" }}>Invalid Email or Password</h3>
+                )}
               </div>
               <div className="mt-2">
                 <input
@@ -89,8 +126,13 @@ export default function Login() {
             <div>
               <button
                 type="submit"
-                className={(validPassword ? "bg-indigo-600 hover:bg-indigo-500  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" : "bg-indigo-300 hover:bg-indigo-300") + "flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm"}
-                disabled={!validPassword}
+                className={
+                  (validPassword
+                    ? "bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    : "bg-indigo-300 hover:bg-indigo-300") +
+                  " flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm"
+                }
+                disabled={!validPassword || isLoading}
               >
                 Login
               </button>
@@ -112,5 +154,5 @@ export default function Login() {
         </div>
       </div>
     </>
-  )
+  );
 }
