@@ -36,7 +36,6 @@ function Leaderboard() {
             `${process.env.NEXT_PUBLIC_API_URL}/friends?user_id=${session.user.user_id}&status=ACCEPTED`
           );
           setFriends(response.data);
-          console.log(response.data);
         } catch (error) {
           console.log(error);
         }
@@ -68,7 +67,9 @@ function Leaderboard() {
                 <h3 className="text-lg font-semibold text-gray-800">
                   {friend.friend.name}
                 </h3>
-                <p className="text-sm text-gray-600">{friend.friend.location || 'N/A'}</p>
+                <p className="text-sm text-gray-600">
+                  {friend.friend.location || "N/A"}
+                </p>
               </div>
               <div className="flex-grow" />
               <p className="text-lg font-semibold text-gray-800">3500</p>

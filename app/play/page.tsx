@@ -37,7 +37,7 @@ const GamePage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [guesses, setGuesses] = useState<Guess[]>(Array(5).fill({}));
+  const [guesses, setGuesses] = useState<Guess[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [count, setCount] = useState<number>(0);
   const [arr, setArr] = useState<(number | null)[]>(new Array(5).fill(null));
@@ -72,14 +72,6 @@ const GamePage = () => {
     fetchData();
   }, [todayDate]);
 
-  function getGuess() {
-    return currentQuestion?.choices[(selectedOption as number) - 1];
-  }
-
-  function isCorrect() {
-    return getGuess() === currentQuestion?.correctChoice;
-  }
-
   const updateData = () => {
     if (
       !currentQuestion ||
@@ -89,21 +81,19 @@ const GamePage = () => {
       return;
     }
 
-    const newGuesses = [...guesses];
-    newGuesses[count] = {
-      question_id: currentQuestion.question_id,
-      category: currentQuestion.category,
-      guess: getGuess(),
-      isCorrect: isCorrect(),
-      user_id: session.user.user_id,
-    };
-    setGuesses(newGuesses);
-  };
+    const guess = currentQuestion.choices[selectedOption - 1];
 
-  const calculateScore = () => {
-    return guesses.reduce((score, guess) => {
-      return guess.isCorrect ? score + 1 : score;
-    }, 0);
+    setGuesses((prevGuesses) => {
+      const newGuesses = [...prevGuesses];
+      newGuesses[count] = {
+        question_id: currentQuestion.question_id,
+        category: currentQuestion.category,
+        guess,
+        isCorrect: guess === currentQuestion.correctChoice,
+        user_id: session.user.user_id,
+      };
+      return newGuesses;
+    });
   };
 
   const handleAnswerNext = () => {
@@ -120,10 +110,27 @@ const GamePage = () => {
   };
 
   const handleAnswerSubmit = async () => {
-    if (!session?.user.user_id || !gameId) return;
+    if (
+      !session?.user.user_id ||
+      !gameId ||
+      selectedOption === null ||
+      !currentQuestion
+    )
+      return;
 
-    updateData();
-    const score = calculateScore();
+    const guess = currentQuestion.choices[selectedOption - 1];
+    const finalGuesses = [...guesses];
+    finalGuesses[count] = {
+      question_id: currentQuestion.question_id,
+      category: currentQuestion.category,
+      guess,
+      isCorrect: guess === currentQuestion.correctChoice,
+      user_id: session.user.user_id,
+    };
+
+    const score = finalGuesses.reduce((score, guess) => {
+      return guess.isCorrect ? score + 1 : score;
+    }, 0);
 
     try {
       const reqBody = {
@@ -131,19 +138,14 @@ const GamePage = () => {
         game_id: gameId,
         score,
         date: todayDate,
+        guesses: finalGuesses.filter((guess) => guess.question_id),
       };
-      const response = await axios.post(
+
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/results/*/*`,
         reqBody
       );
-      const resultId = response.data.result_id;
-      guesses.forEach((guess) => {
-        guess["result_id"] = resultId;
-      });
-      const guessResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/guesses/`,
-        guesses
-      );
+
       router.push(`/results/${todayDate}`);
     } catch (error) {
       console.error(error);

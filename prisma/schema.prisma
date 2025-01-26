@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  url      = env("POSTGRES_PRISMA_URL_DEV")
 }
 
 model User {
@@ -13,23 +13,22 @@ model User {
   email         String   @unique @db.VarChar(100)
   password_hash String   @db.VarChar(255)
   location      String?  @db.VarChar(255)
-  created_at    DateTime @default(now())
   role          Int      @default(0)
+  created_at    DateTime @default(now())
+  friendOf      Friend[] @relation("UserFriendOf")
+  friends       Friend[] @relation("UserFriends")
   guesses       Guess[]
   results       Result[]
-  friends       Friend[] @relation("UserFriends")
-  friendOf      Friend[] @relation("UserFriendOf")
 }
 
 model Friend {
-  user_id         Int
-  friend_id       Int
-  status          Status   @default(PENDING)
-  created_at      DateTime @default(now())
-  user_requested  Boolean
-
-  user   User @relation("UserFriends", fields: [user_id], references: [user_id])
-  friend User @relation("UserFriendOf", fields: [friend_id], references: [user_id])
+  user_id        Int
+  friend_id      Int
+  status         Status   @default(PENDING)
+  created_at     DateTime @default(now())
+  user_requested Boolean
+  friend         User     @relation("UserFriendOf", fields: [friend_id], references: [user_id])
+  user           User     @relation("UserFriends", fields: [user_id], references: [user_id])
 
   @@id([user_id, friend_id])
   @@unique([user_id, friend_id])

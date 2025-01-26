@@ -4,7 +4,6 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from "react-icons/fi";
-import { CATEGORY_COLOR_MAP } from "@/constants";
 import { useDisclosure } from "@mantine/hooks";
 import { Modal, TextInput, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -46,6 +45,14 @@ function UserProfile({ params }: { params: { userId: string } }) {
     () => ["ART", "ENTERTAINMENT", "GEOGRAPHY", "HISTORY", "SCIENCE", "SPORTS"],
     []
   );
+  const CATEGORY_COLOR_MAP = new Map<string, string>([
+    ["ENTERTAINMENT", "text-pink-600"],
+    ["SPORTS", "text-orange-600"],
+    ["ART", "text-red-600"],
+    ["SCIENCE", "text-green-600"],
+    ["GEOGRAPHY", "text-blue-600"],
+    ["HISTORY", "text-yellow-600"],
+  ]);
   const [results, setResults] = useState<Result[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [guesses, setGuesses] = useState<Guess[]>([]);
@@ -224,16 +231,16 @@ function UserProfile({ params }: { params: { userId: string } }) {
               {catMap.map((categoryObj) => (
                 <div key={categoryObj.category} className="mb-4 text-center">
                   <span
-                    className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl text-${CATEGORY_COLOR_MAP.get(
+                    className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl ${CATEGORY_COLOR_MAP.get(
                       categoryObj.category
-                    )}-600 font-semibold mb-2`}
+                    )} font-semibold mb-2`}
                   >
                     {categoryObj.category}
                   </span>
                   <span
-                    className={`block text-4xl text-${CATEGORY_COLOR_MAP.get(
+                    className={`block text-4xl ${CATEGORY_COLOR_MAP.get(
                       categoryObj.category
-                    )}-600 font-bold`}
+                    )} font-bold`}
                   >
                     {!Number.isNaN(categoryObj.percentage)
                       ? `${categoryObj.percentage.toFixed(0)}%`
