@@ -1,41 +1,64 @@
 "use client";
 
-import { Status } from "@prisma/client";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 function Leaderboard() {
-  interface User {
+  interface LeaderboardEntry {
     user_id: number;
     name: string;
-    email: string;
     location: string | null;
-    role: string | null;
-  }
-
-  interface Friend {
-    created_at: Date;
-    friend: User;
-    user_id: number;
-    friend_id: number;
-    user_requested: Boolean;
-    status: Status;
+    score: number | null;
   }
 
   const currDate = new Date().toLocaleDateString();
   const { data: session } = useSession();
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
+    []
+  );
 
   useEffect(() => {
     if (session) {
       const fetchData = async () => {
         try {
+          // Fetch friends data
           const response = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/friends?user_id=${session.user.user_id}&status=ACCEPTED`
           );
-          setFriends(response.data);
+
+          // Get current user's result
+          const userResult = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`
+          );
+
+          // Create entry for current user
+          const currentUserEntry: LeaderboardEntry = {
+            user_id: session.user.user_id,
+            name: session.user.name,
+            location: session.user.location || "N/A",
+            score: userResult.data[0]?.score ?? null,
+          };
+
+          // Create entries for friends
+          const friendEntries = response.data.map((friend: any) => ({
+            user_id: friend.friend.user_id,
+            name: friend.friend.name,
+            location: friend.friend.location || "N/A",
+            score: friend.friend.results[0]?.score ?? null,
+          }));
+
+          // Combine and sort all entries
+          const allEntries = [currentUserEntry, ...friendEntries].sort(
+            (a, b) => {
+              const scoreA = a.score ?? -1;
+              const scoreB = b.score ?? -1;
+              return scoreB - scoreA;
+            }
+          );
+
+          setLeaderboardData(allEntries);
         } catch (error) {
           console.log(error);
         }
@@ -57,22 +80,28 @@ function Leaderboard() {
 
         {/* Individual leaderboard entries */}
         <div className="flex flex-col">
-          {friends.map((friend, index) => (
+          {leaderboardData.map((entry, index) => (
             <div
-              key={friend.friend_id}
-              className="flex items-center justify-between px-6 py-4 bg-gray-100"
+              key={entry.user_id}
+              className={`flex items-center justify-between px-6 py-4 ${
+                entry.user_id === session?.user.user_id
+                  ? "bg-blue-50"
+                  : index % 2 === 0
+                  ? "bg-gray-100"
+                  : "bg-white"
+              }`}
             >
               <div className="text-gray-600 font-semibold">{index + 1}.</div>
               <div className="pl-4">
                 <h3 className="text-lg font-semibold text-gray-800">
-                  {friend.friend.name}
+                  {entry.name}
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {friend.friend.location || "N/A"}
-                </p>
+                <p className="text-sm text-gray-600">{entry.location}</p>
               </div>
               <div className="flex-grow" />
-              <p className="text-lg font-semibold text-gray-800">3500</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {entry.score ?? "No score yet"}
+              </p>
             </div>
           ))}
         </div>

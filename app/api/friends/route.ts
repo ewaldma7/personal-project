@@ -41,6 +41,14 @@ export async function GET(request: NextRequest) {
             location: true,
             name: true,
             user_id: true,
+            results: {
+              where: {
+                date: new Date().toLocaleDateString().replace(/\//g, "-"),
+              },
+              select: {
+                score: true,
+              },
+            },
           },
         },
       },
