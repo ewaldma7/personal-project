@@ -25,7 +25,7 @@ const Dashboard = () => {
 
   function getPreviousDates(currentDate: Date) {
     let dates = [];
-    for (let i = 0; i <= 4; i++) {
+    for (let i = 0; i <= 6; i++) {
       let date = new Date();
       date.setDate(currentDate.getDate() - i);
       dates.push(date);
@@ -88,8 +88,12 @@ const Dashboard = () => {
         </button>
       </Link>
 
-      {/* Past Games section */}
-      <PastGames results={results.slice(0, 5)} />
+      <div className="w-full max-w-4xl">
+        <PastGames
+          results={results}
+          previousDates={previousDates.map((date) => convertDate(date))}
+        />
+      </div>
     </div>
   ) : (
     ""

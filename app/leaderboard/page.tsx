@@ -76,14 +76,14 @@ function Leaderboard() {
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="flex justify-center py-4">
-          <Link href="/dashboard">
-            <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-              Back to Dashboard
-            </button>
-          </Link>
-        </div>
+      <div className="flex justify-center mt-4">
+        <Link href="/dashboard">
+          <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+            Back to Dashboard
+          </button>
+        </Link>
       </div>
     </div>
   );

@@ -75,14 +75,20 @@ export async function GET(
       userId === "*"
         ? { game_id: Number(gameId) }
         : { user_id: Number(userId) };
-    const orderBy = userId === "*" ? undefined : { date: "desc" as const };
+
     const results = await prisma.result.findMany({
       where: filter,
-      orderBy: orderBy,
       include: { guesses: true },
     });
 
-    return NextResponse.json(results, { status: 200 });
+    // Sort results by converting string dates to Date objects
+    const sortedResults = results.sort((a, b) => {
+      const dateA = new Date(a.date.split("-").join("/"));
+      const dateB = new Date(b.date.split("-").join("/"));
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    return NextResponse.json(sortedResults, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(error, { status: 500 });
