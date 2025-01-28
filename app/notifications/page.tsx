@@ -8,6 +8,7 @@ import { Text, Title, SegmentedControl } from "@mantine/core";
 import { IconBell, IconCheck } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSession } from "next-auth/react";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function Notifications() {
   interface User {
@@ -138,36 +139,36 @@ function Notifications() {
     </div>
   );
 
-  return (
-    !loading && (
-      <div className="mx-4 sm:mx-10 lg:mx-20">
-        <div className="flex flex-wrap items-center">
-          <IconBell className="text-[#A16207] w-6 h-6 sm:w-7 sm:h-7 mr-2 sm:mr-3" />
-          <Title className="text-[#A16207]" size="lg">
-            Friend Requests
-          </Title>
-          <SegmentedControl
-            className="ml-auto mt-2 sm:mt-0 w-full sm:w-auto"
-            color="#A16207"
-            value={value}
-            onChange={setValue}
-            data={[
-              { label: "Received", value: "r" },
-              { label: "Sent", value: "s" },
-            ]}
-          />
-        </div>
-        <div className="mt-5">
-          {filteredFriends.length !== 0 ? (
-            filteredFriends.map((friend) => renderFriendCard(friend.friend))
-          ) : (
-            <Text size="xl" fw="300">
-              No current requests!
-            </Text>
-          )}
-        </div>
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
+    <div className="mx-4 sm:mx-10 lg:mx-20">
+      <div className="flex flex-wrap items-center">
+        <IconBell className="text-[#A16207] w-6 h-6 sm:w-7 sm:h-7 mr-2 sm:mr-3" />
+        <Title className="text-[#A16207]" size="lg">
+          Friend Requests
+        </Title>
+        <SegmentedControl
+          className="ml-auto mt-2 sm:mt-0 w-full sm:w-auto"
+          color="#A16207"
+          value={value}
+          onChange={setValue}
+          data={[
+            { label: "Received", value: "r" },
+            { label: "Sent", value: "s" },
+          ]}
+        />
       </div>
-    )
+      <div className="mt-5">
+        {filteredFriends.length !== 0 ? (
+          filteredFriends.map((friend) => renderFriendCard(friend.friend))
+        ) : (
+          <Text size="xl" fw="300">
+            No current requests!
+          </Text>
+        )}
+      </div>
+    </div>
   );
 }
 

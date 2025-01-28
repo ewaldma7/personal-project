@@ -9,6 +9,7 @@ import { Modal, TextInput, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function UserProfile({ params }: { params: { userId: string } }) {
   interface User {
@@ -63,6 +64,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
   const [requestEmail, setRequestEmail] = useState("");
   const [error, setError] = useState("");
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,8 +136,6 @@ function UserProfile({ params }: { params: { userId: string } }) {
     setCatMap(categoryPercentages);
   }, [guesses, CATEGORIES]);
 
-  const [loading, setLoading] = useState(true);
-
   const renderAvatar = (name: string) => {
     const initials = name
       .split(" ")
@@ -189,110 +189,106 @@ function UserProfile({ params }: { params: { userId: string } }) {
     close();
   };
 
-  return (
-    !loading && (
-      <>
-        <div className="container mx-auto mt-8 flex flex-col lg:flex-row gap-8">
-          <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
-            <h2 className="text-2xl font-bold mb-4">Profile</h2>
-            <div className="flex flex-col">
-              <div className="mb-4 flex items-center">
-                <h2 className="text-2xl font-semibold mb-2 mr-2">
-                  {user?.name}
-                </h2>
-              </div>
-              <p className="text-gray-600 flex items-center">
-                <FiMail className="mr-2" /> {user?.email}
-              </p>
-              <p className="text-gray-600 flex items-center">
-                <FiMapPin className="mr-2" /> {user?.location}
-              </p>
-              <div className="flex items-center my-4">
-                <FiCalendar className="text-4xl mr-4 text-blue-500" />
-                <div>
-                  <p className="text-xl font-semibold">Days Played</p>
-                  <p className="text-gray-600 text-4xl">{results.length}</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <FiStar className="text-4xl mr-4 text-yellow-500" />
-                <div>
-                  <p className="text-xl font-semibold">Average Score</p>
-                  <p className="text-gray-600 text-4xl">
-                    {avgScore.toFixed(2)}
-                  </p>
-                </div>
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
+    <>
+      <div className="container mx-auto mt-8 flex flex-col lg:flex-row gap-8">
+        <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
+          <h2 className="text-2xl font-bold mb-4">Profile</h2>
+          <div className="flex flex-col">
+            <div className="mb-4 flex items-center">
+              <h2 className="text-2xl font-semibold mb-2 mr-2">{user?.name}</h2>
+            </div>
+            <p className="text-gray-600 flex items-center">
+              <FiMail className="mr-2" /> {user?.email}
+            </p>
+            <p className="text-gray-600 flex items-center">
+              <FiMapPin className="mr-2" /> {user?.location}
+            </p>
+            <div className="flex items-center my-4">
+              <FiCalendar className="text-4xl mr-4 text-blue-500" />
+              <div>
+                <p className="text-xl font-semibold">Days Played</p>
+                <p className="text-gray-600 text-4xl">{results.length}</p>
               </div>
             </div>
-          </div>
-          <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/2">
-            <h2 className="text-2xl font-bold mb-8">Category Percentages</h2>
-            <div className="grid grid-cols-3 gap-4">
-              {catMap.map((categoryObj) => (
-                <div key={categoryObj.category} className="mb-4 text-center">
-                  <span
-                    className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl ${CATEGORY_COLOR_MAP.get(
-                      categoryObj.category
-                    )} font-semibold mb-2`}
-                  >
-                    {categoryObj.category}
-                  </span>
-                  <span
-                    className={`block text-4xl ${CATEGORY_COLOR_MAP.get(
-                      categoryObj.category
-                    )} font-bold`}
-                  >
-                    {!Number.isNaN(categoryObj.percentage)
-                      ? `${categoryObj.percentage.toFixed(0)}%`
-                      : "N/A"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
-            <h2 className="text-2xl font-bold mb-4">Friends</h2>
-            <div className="text-gray-600 max-h-72 overflow-y-auto">
-              {friends.map((friend: any) => renderFriendCard(friend.friend))}
-            </div>
-
-            <Modal
-              centered
-              opened={opened}
-              onClose={close}
-              title="Send Friend Request"
-            >
-              <TextInput
-                type="email"
-                label="Enter email:"
-                placeholder="johndoe123@gmail.com"
-                onChange={(e) => setRequestEmail(e.target.value)}
-              />
-              <div className="text-red-500 mt-2">
-                {error && <Text>{error}</Text>}
+            <div className="flex items-center">
+              <FiStar className="text-4xl mr-4 text-yellow-500" />
+              <div>
+                <p className="text-xl font-semibold">Average Score</p>
+                <p className="text-gray-600 text-4xl">{avgScore.toFixed(2)}</p>
               </div>
-              <button
-                disabled={requestEmail === ""}
-                onClick={sendFriendRequest}
-                className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 text-sm rounded"
-              >
-                Send
-              </button>
-            </Modal>
-            {session?.user.user_id === parseInt(params.userId) && (
-              <button
-                onClick={open}
-                className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded"
-              >
-                <FiUsers className="mr-2" style={{ display: "inline" }} /> Add
-                Friends
-              </button>
-            )}
+            </div>
           </div>
         </div>
-      </>
-    )
+        <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/2">
+          <h2 className="text-2xl font-bold mb-8">Category Percentages</h2>
+          <div className="grid grid-cols-3 gap-4">
+            {catMap.map((categoryObj) => (
+              <div key={categoryObj.category} className="mb-4 text-center">
+                <span
+                  className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl ${CATEGORY_COLOR_MAP.get(
+                    categoryObj.category
+                  )} font-semibold mb-2`}
+                >
+                  {categoryObj.category}
+                </span>
+                <span
+                  className={`block text-4xl ${CATEGORY_COLOR_MAP.get(
+                    categoryObj.category
+                  )} font-bold`}
+                >
+                  {!Number.isNaN(categoryObj.percentage)
+                    ? `${categoryObj.percentage.toFixed(0)}%`
+                    : "N/A"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
+          <h2 className="text-2xl font-bold mb-4">Friends</h2>
+          <div className="text-gray-600 max-h-72 overflow-y-auto">
+            {friends.map((friend: any) => renderFriendCard(friend.friend))}
+          </div>
+
+          <Modal
+            centered
+            opened={opened}
+            onClose={close}
+            title="Send Friend Request"
+          >
+            <TextInput
+              type="email"
+              label="Enter email:"
+              placeholder="johndoe123@gmail.com"
+              onChange={(e) => setRequestEmail(e.target.value)}
+            />
+            <div className="text-red-500 mt-2">
+              {error && <Text>{error}</Text>}
+            </div>
+            <button
+              disabled={requestEmail === ""}
+              onClick={sendFriendRequest}
+              className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 text-sm rounded"
+            >
+              Send
+            </button>
+          </Modal>
+          {session?.user.user_id === parseInt(params.userId) && (
+            <button
+              onClick={open}
+              className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded"
+            >
+              <FiUsers className="mr-2" style={{ display: "inline" }} /> Add
+              Friends
+            </button>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

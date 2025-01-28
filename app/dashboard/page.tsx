@@ -5,9 +5,10 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import axios from "axios";
 import PastGames from "../components/PastGames";
-import { Container, rem, Text, Title } from "@mantine/core";
+import { Text, Title } from "@mantine/core";
 import { IconCrown } from "@tabler/icons-react";
 import { Result, Guess } from "@prisma/client";
+import LoadingSpinner from '../components/LoadingSpinner';
 
 interface ExtendedResult extends Result {
   guesses: Guess[];
@@ -96,7 +97,7 @@ const Dashboard = () => {
       </div>
     </div>
   ) : (
-    ""
+    <LoadingSpinner />
   );
 };
 

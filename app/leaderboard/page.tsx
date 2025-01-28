@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function Leaderboard() {
   interface LeaderboardEntry {
@@ -18,6 +19,7 @@ function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
     []
   );
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (session) {
@@ -61,13 +63,17 @@ function Leaderboard() {
           setLeaderboardData(allEntries);
         } catch (error) {
           console.log(error);
+        } finally {
+          setLoading(false);
         }
       };
       fetchData();
     }
   }, [session]);
 
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     <div className="max-w-lg mx-auto">
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         {/* Leaderboard header */}
