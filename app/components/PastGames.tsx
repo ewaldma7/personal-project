@@ -26,7 +26,7 @@ const PastGames: React.FC<Props> = ({ results, previousDates }) => {
 
   return (
     <Container size="100%" className="max-w-7xl">
-      <div className="mt-10 mb-5">
+      <div className=" mb-5">
         <Text size="xl" fw="800">
           Past Games
         </Text>

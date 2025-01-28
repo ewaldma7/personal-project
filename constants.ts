@@ -13,5 +13,5 @@ export const COLOR_VARIANTS = {
     ART : 'text-red-400',
     SCIENCE : 'text-green-400',
     GEOGRAPHY : 'text-blue-400',
-    HISTORY : 'text-yellow-400',
+    HISTORY : 'text-yellow-600',
 }

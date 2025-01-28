@@ -119,7 +119,7 @@ const Dashboard = () => {
   ];
 
   return session && loaded ? (
-    <div className="min-h-screen flex flex-col items-center pt-16 px-4 sm:px-8 md:px-16 lg:px-24">
+    <div className="min-h-screen flex flex-col items-center pt-6 px-4 sm:px-8 md:px-16 lg:px-24">
       <IconCrown
         className="w-24 h-24 mb-8"
         stroke={1.5}
