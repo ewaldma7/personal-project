@@ -14,7 +14,6 @@ function Leaderboard() {
     score: number | null;
   }
 
-  const currDate = new Date().toLocaleDateString();
   const { data: session } = useSession();
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
     []
@@ -44,8 +43,6 @@ function Leaderboard() {
           const userResult = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`
           );
-          console.log(userResult.data[0]?.date);
-          console.log(today);
 
           // Create entry for current user
           const currentUserEntry: LeaderboardEntry = {
@@ -92,51 +89,54 @@ function Leaderboard() {
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <div className="max-w-lg mx-auto">
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        {/* Leaderboard header */}
-        <div className="bg-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-800">
-            Leaderboard: {currDate}
-          </h2>
-          <p className="text-sm text-gray-600">Score</p>
-        </div>
+    <div className="min-h-screen flex flex-col items-center pt-16 px-4 sm:px-8 md:px-16 lg:px-24">
+      <div className="w-full max-w-4xl">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          {/* Leaderboard header */}
+          <div className="bg-gray-200 px-6 py-4 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-800">Leaderboard</h2>
+            <p className="text-lg font-semibold text-gray-600">Score</p>
+          </div>
 
-        {/* Individual leaderboard entries */}
-        <div className="flex flex-col">
-          {leaderboardData.map((entry, index) => (
-            <div
-              key={entry.user_id}
-              className={`flex items-center justify-between px-6 py-4 ${
-                entry.user_id === session?.user.user_id
-                  ? "bg-blue-50"
-                  : index % 2 === 0
-                  ? "bg-gray-100"
-                  : "bg-white"
-              }`}
-            >
-              <div className="text-gray-600 font-semibold">{index + 1}.</div>
-              <div className="pl-4">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {entry.name}
-                </h3>
-                <p className="text-sm text-gray-600">{entry.location}</p>
+          {/* Individual leaderboard entries */}
+          <div className="flex flex-col">
+            {leaderboardData.map((entry, index) => (
+              <div
+                key={entry.user_id}
+                className={`flex items-center justify-between px-6 py-4 ${
+                  entry.user_id === session?.user.user_id
+                    ? "bg-blue-50"
+                    : index % 2 === 0
+                    ? "bg-gray-50"
+                    : "bg-white"
+                }`}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="text-xl font-semibold text-gray-600">
+                    {index + 1}.
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {entry.name}
+                    </h3>
+                    <p className="text-sm text-gray-600">{entry.location}</p>
+                  </div>
+                </div>
+                <p className="text-xl font-semibold text-gray-800">
+                  {entry.score ?? "No score yet"}
+                </p>
               </div>
-              <div className="flex-grow" />
-              <p className="text-lg font-semibold text-gray-800">
-                {entry.score ?? "No score yet"}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="flex justify-center mt-4">
-        <Link href="/dashboard">
-          <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-            Back to Dashboard
-          </button>
-        </Link>
+        <div className="flex justify-center mt-8">
+          <Link href="/dashboard">
+            <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200">
+              Back to Dashboard
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

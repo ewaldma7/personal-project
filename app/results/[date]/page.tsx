@@ -4,16 +4,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import {
-  Avatar,
-  Text,
-  Accordion,
-  Title,
-  Badge,
-  Grid,
-} from "@mantine/core";
+import { Avatar, Text, Accordion, Title, Badge, Grid } from "@mantine/core";
 import { CATEGORY_COLOR_MAP } from "@/constants";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 interface Result {
   result_id: Number;
@@ -52,6 +46,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
   const [result, setResult] = useState<Result | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [guesses, setGuesses] = useState<Guess[] | undefined>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   function AccordionLabel({ guess }: AccLabelProps) {
@@ -124,8 +119,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
   useEffect(() => {
     if (new Date(params.date) > new Date()) {
       router.push("/dashboard");
-    }
-    else if (userId) {
+    } else if (userId) {
       const fetchData = async () => {
         try {
           const currDate = new Date(params.date);
@@ -141,20 +135,24 @@ function ResultsPage({ params }: { params: { date: string } }) {
           );
           const resultData: Result = resultResponse.data;
           if (Object.keys(resultData).length === 0) {
-            router.push("/dashboard")
+            router.push("/dashboard");
           } else {
             setResult(resultData);
             setGuesses(resultData.guesses);
           }
         } catch (error) {
           console.log(error);
+        } finally {
+          setLoading(false);
         }
       };
       fetchData();
     }
   }, [userId, params.date, router]);
 
-  return guesses?.length !== 0 ? (
+  return loading ? (
+    <LoadingSpinner />
+  ) : guesses?.length !== 0 ? (
     <div className=" justify-center items-center ml-20">
       <Title>Results For: {params.date}</Title>
       <Accordion
