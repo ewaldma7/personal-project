@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { CATEGORY_COLOR_MAP } from "@/constants";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 interface Question {
   question_id: number;
@@ -152,71 +153,61 @@ const GamePage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl">Loading...</p>
-      </div>
-    );
-  }
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
+    <div className="flex justify-center items-center mt-12">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-6">Question {count + 1}</h1>
+        <p
+          className={`font-semibold text-2xl mb-6 text-${CATEGORY_COLOR_MAP.get(
+            currentQuestion?.category as string
+          )}-600`}
+        >
+          {" "}
+          Category: {currentQuestion?.category}
+        </p>
+        <p className="text-2xl mb-6">{currentQuestion?.question}</p>
 
-  return (
-    !loading && (
-      <div className="flex justify-center items-center mt-12">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-6">Question {count + 1}</h1>
-          <p
-            className={`font-semibold text-2xl mb-6 text-${CATEGORY_COLOR_MAP.get(
-              currentQuestion?.category as string
-            )}-600`}
-          >
-            {" "}
-            Category: {currentQuestion?.category}
-          </p>
-          <p className="text-2xl mb-6">{currentQuestion?.question}</p>
-
-          {/* Render answer choices as styled buttons */}
-          <div className="flex flex-col gap-4 mb-6">
-            {currentQuestion?.choices.map((choice, index) => (
-              <button
-                key={index}
-                className={`text-xl py-3 px-5 border rounded-lg transition-colors duration-200 ${
-                  selectedOption === index + 1
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:bg-gray-300"
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
-                onClick={() =>
-                  setSelectedOption(
-                    selectedOption === index + 1 ? null : index + 1
-                  )
-                }
-              >
-                {choice}
-              </button>
-            ))}
-          </div>
-
-          <br />
-          <div className="flex justify-center py-4">
+        {/* Render answer choices as styled buttons */}
+        <div className="flex flex-col gap-4 mb-6">
+          {currentQuestion?.choices.map((choice, index) => (
             <button
-              disabled={count === NUM_QUESTIONS - 1 && selectedOption === null}
-              onClick={
-                count < NUM_QUESTIONS - 1
-                  ? handleAnswerNext
-                  : handleAnswerSubmit
+              key={index}
+              className={`text-xl py-3 px-5 border rounded-lg transition-colors duration-200 ${
+                selectedOption === index + 1
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:bg-gray-300"
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+              onClick={() =>
+                setSelectedOption(
+                  selectedOption === index + 1 ? null : index + 1
+                )
               }
-              className={`text-white font-bold py-2 px-4 rounded ${
-                count === NUM_QUESTIONS - 1 && selectedOption === null
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-gray-500 hover:bg-gray-600"
-              }`}
             >
-              {count < NUM_QUESTIONS - 1 ? "Next Question" : "Submit Answers"}
+              {choice}
             </button>
-          </div>
+          ))}
+        </div>
+
+        <br />
+        <div className="flex justify-center py-4">
+          <button
+            disabled={count === NUM_QUESTIONS - 1 && selectedOption === null}
+            onClick={
+              count < NUM_QUESTIONS - 1 ? handleAnswerNext : handleAnswerSubmit
+            }
+            className={`text-white font-bold py-2 px-4 rounded ${
+              count === NUM_QUESTIONS - 1 && selectedOption === null
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-gray-500 hover:bg-gray-600"
+            }`}
+          >
+            {count < NUM_QUESTIONS - 1 ? "Next Question" : "Submit Answers"}
+          </button>
         </div>
       </div>
-    )
+    </div>
   );
 };
 

@@ -25,12 +25,15 @@ function Leaderboard() {
     if (session) {
       const fetchData = async () => {
         try {
-          // Format today's date to match the API date format
-          const today = new Date().toLocaleDateString("en-US", {
-            month: "numeric",
-            day: "numeric",
-            year: "numeric",
-          });
+          // Format today's date without leading zeros
+          const today = new Date()
+            .toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            })
+            .split("/")
+            .join("-");
 
           // Fetch friends data
           const response = await axios.get(
@@ -41,6 +44,8 @@ function Leaderboard() {
           const userResult = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`
           );
+          console.log(userResult.data[0]?.date);
+          console.log(today);
 
           // Create entry for current user
           const currentUserEntry: LeaderboardEntry = {
