@@ -4,7 +4,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function Leaderboard() {
   interface LeaderboardEntry {
@@ -25,6 +25,13 @@ function Leaderboard() {
     if (session) {
       const fetchData = async () => {
         try {
+          // Format today's date to match the API date format
+          const today = new Date().toLocaleDateString("en-US", {
+            month: "numeric",
+            day: "numeric",
+            year: "numeric",
+          });
+
           // Fetch friends data
           const response = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/friends?user_id=${session.user.user_id}&status=ACCEPTED`
@@ -40,7 +47,10 @@ function Leaderboard() {
             user_id: session.user.user_id,
             name: session.user.name,
             location: session.user.location || "N/A",
-            score: userResult.data[0]?.score ?? null,
+            score:
+              userResult.data[0]?.date === today
+                ? userResult.data[0]?.score
+                : null,
           };
 
           // Create entries for friends
@@ -48,7 +58,10 @@ function Leaderboard() {
             user_id: friend.friend.user_id,
             name: friend.friend.name,
             location: friend.friend.location || "N/A",
-            score: friend.friend.results[0]?.score ?? null,
+            score:
+              friend.friend.results[0]?.date === today
+                ? friend.friend.results[0]?.score
+                : null,
           }));
 
           // Combine and sort all entries
