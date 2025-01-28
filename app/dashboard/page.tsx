@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import axios from "axios";
 import PastGames from "../components/PastGames";
-import { Text, Title, Paper, Group, RingProgress } from "@mantine/core";
+import { Text, Title, Paper, Group } from "@mantine/core";
 import {
   IconCrown,
   IconTrophy,
@@ -89,7 +89,9 @@ const Dashboard = () => {
       for (let i = 0; i < dates.length; i++) {
         if (results.find((r) => r.date === convertDate(previousDates[i]))) {
           currentStreak++;
-        } else break;
+        } else if (i !== 0) {
+          break;
+        }
       }
       setStreak(currentStreak);
     }

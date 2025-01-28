@@ -10,7 +10,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [guessed, setGuessed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const validPassword = true; //NEED TO CHANGE
   const router = useRouter();
 
   const logIn = async (e: React.FormEvent) => {
@@ -127,12 +126,12 @@ export default function Login() {
               <button
                 type="submit"
                 className={
-                  (validPassword
+                  (email && password
                     ? "bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     : "bg-indigo-300 hover:bg-indigo-300") +
                   " flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm"
                 }
-                disabled={!validPassword || isLoading}
+                disabled={!email || !password || isLoading}
               >
                 Login
               </button>
@@ -144,7 +143,7 @@ export default function Login() {
               Register here.
             </Link>
           </div>
-          <div className="flex justify-center py-4">
+          <div className="flex justify-center py-6">
             <Link href="/">
               <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 mb-2 px-4 rounded">
                 Back to Main Page
