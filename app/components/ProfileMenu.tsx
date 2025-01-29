@@ -21,6 +21,7 @@ const ProfileMenu: React.FC<MenuProps> = ({ name }) => {
       trigger="click"
       openDelay={100}
       closeDelay={100}
+      closeOnItemClick
     >
       <Menu.Target>
         <Avatar style={{ cursor: "pointer" }}>{name[0]}</Avatar>
