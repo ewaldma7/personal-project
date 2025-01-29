@@ -122,11 +122,8 @@ function ResultsPage({ params }: { params: { date: string } }) {
     } else if (userId) {
       const fetchData = async () => {
         try {
-          const currDate = new Date(params.date);
           const gameResponse = await axios.get(
-            `${
-              process.env.NEXT_PUBLIC_API_URL
-            }/games/?date=${currDate.toLocaleDateString()}`
+            `${process.env.NEXT_PUBLIC_API_URL}/games/?date=${params.date}`
           );
           const gameData = gameResponse.data;
           setQuestions(gameData.questions);

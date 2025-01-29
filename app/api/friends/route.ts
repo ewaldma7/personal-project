@@ -1,4 +1,5 @@
 import prisma from "@/app/lib/client";
+import { getToday } from "@/app/lib/dateUtils";
 import {
   requestFriendSchema,
   respondFriendSchema,
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
             user_id: true,
             results: {
               where: {
-                date: new Date().toLocaleDateString().replace(/\//g, "-"),
+                date: `${getToday()}T00:00:00.000Z`,
               },
               select: {
                 score: true,

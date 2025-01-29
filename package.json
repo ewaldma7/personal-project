@@ -7,7 +7,9 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "data": "node ./dummyData.js"
+    "data": "node ./dummyData.js",
+    "migrate-data": "node migrateData.js",
+    "reset-sequences": "node resetSequences.js"
   },
   "dependencies": {
     "@mantine/core": "^7.4.1",

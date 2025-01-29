@@ -54,14 +54,14 @@ model Question {
 }
 
 model Result {
-  result_id Int     @id @default(autoincrement())
+  result_id Int      @id @default(autoincrement())
   user_id   Int
   game_id   Int
   score     Int
-  date      String  @db.VarChar(30)
+  date      DateTime @db.Date
   guesses   Guess[]
-  game      Game    @relation(fields: [game_id], references: [game_id])
-  user      User    @relation(fields: [user_id], references: [user_id])
+  game      Game     @relation(fields: [game_id], references: [game_id])
+  user      User     @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, game_id])
 }
@@ -72,8 +72,8 @@ model Guess {
   question_id Int
   result_id   Int
   guess       String
-  category    Category
   isCorrect   Boolean
+  category    Category
   question    Question @relation(fields: [question_id], references: [question_id])
   result      Result   @relation(fields: [result_id], references: [result_id])
   user        User     @relation(fields: [user_id], references: [user_id])

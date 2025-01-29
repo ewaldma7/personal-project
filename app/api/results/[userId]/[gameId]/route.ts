@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
           user_id: body.user_id,
           game_id: body.game_id,
           score: body.score,
-          date: body.date,
+          date: new Date(`${body.date}T00:00:00.000Z`),
         },
       });
 
@@ -83,9 +83,7 @@ export async function GET(
 
     // Sort results by converting string dates to Date objects
     const sortedResults = results.sort((a, b) => {
-      const dateA = new Date(a.date.split("-").join("/"));
-      const dateB = new Date(b.date.split("-").join("/"));
-      return dateB.getTime() - dateA.getTime();
+      return b.date.getTime() - a.date.getTime();
     });
 
     return NextResponse.json(sortedResults, { status: 200 });

@@ -6,6 +6,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { CATEGORY_COLOR_MAP } from "@/constants";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { getToday } from "../lib/dateUtils";
 
 interface Question {
   question_id: number;
@@ -30,7 +31,6 @@ type id = number | null;
 
 const GamePage = () => {
   const NUM_QUESTIONS = 5;
-  const todayDate = new Date().toLocaleDateString().replace(/\//g, "-");
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -42,6 +42,7 @@ const GamePage = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [count, setCount] = useState<number>(0);
   const [arr, setArr] = useState<(number | null)[]>(new Array(5).fill(null));
+  const todayDate = getToday();
 
   //reroute to result page if already played
 

@@ -14,6 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { Result, Guess } from "@prisma/client";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { formatDate, isSameDay } from "@/app/lib/dateUtils";
 
 interface ExtendedResult extends Result {
   guesses: Guess[];
@@ -27,10 +28,6 @@ interface StatsCard {
 }
 
 const Dashboard = () => {
-  function convertDate(date: Date) {
-    return date.toLocaleDateString().replace(/\//g, "-");
-  }
-
   const { data: session } = useSession();
   const [played, setPlayed] = useState<boolean | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -63,7 +60,7 @@ const Dashboard = () => {
           setResults(results.data);
           setPlayed(
             results.data.length > 0 &&
-              results.data[0].date === convertDate(previousDates[0])
+              isSameDay(results.data[0].date, previousDates[0])
           );
         } catch (error) {
           console.log(error);
@@ -87,7 +84,7 @@ const Dashboard = () => {
       let currentStreak = 0;
       const dates = previousDates.map((d) => d.toLocaleDateString());
       for (let i = 0; i < dates.length; i++) {
-        if (results.find((r) => r.date === convertDate(previousDates[i]))) {
+        if (results.find((r) => isSameDay(r.date, previousDates[i]))) {
           currentStreak++;
         } else if (i !== 0) {
           break;
@@ -158,7 +155,7 @@ const Dashboard = () => {
       </div>
 
       <Link
-        href={played ? `/results/${convertDate(previousDates[0])}` : "/play"}
+        href={played ? `/results/${formatDate(previousDates[0])}` : "/play"}
       >
         <button className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-bold py-4 px-8 rounded-lg text-xl mb-12 transition-all">
           {played ? "View Today's Results" : "Play Today's Game"}
@@ -168,7 +165,7 @@ const Dashboard = () => {
       <div className="w-full max-w-6xl">
         <PastGames
           results={results}
-          previousDates={previousDates.map((date) => convertDate(date))}
+          previousDates={previousDates.map((date) => formatDate(date))}
         />
       </div>
     </div>

@@ -12,7 +12,7 @@ interface ScorecardProps {
     game_id: number;
     guesses: Guess[];
     score: number;
-    date: string;
+    date: Date;
   };
   date: string;
 }
@@ -27,7 +27,11 @@ const Scorecard: React.FC<ScorecardProps> = ({ result, date }) => {
     "Friday",
     "Saturday",
   ];
-  const currDate = new Date(date);
+
+  // Parse the date in local timezone
+  const [year, month, day] = date.split("-").map(Number);
+  const currDate = new Date(year, month - 1, day);
+
   const getIcon = (value: number) => {
     if (!result) {
       return <IconMinus size="1.5rem" color="#495057" />;
@@ -89,7 +93,7 @@ const Scorecard: React.FC<ScorecardProps> = ({ result, date }) => {
   );
 
   return result ? (
-    <Link href={`/results/${result.date.replace(/\//g, "-")}`}>
+    <Link href={`/results/${date}`}>
       <CardContent />
     </Link>
   ) : (

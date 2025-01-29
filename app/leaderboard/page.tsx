@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { getToday, isSameDay } from "../lib/dateUtils";
 
 function Leaderboard() {
   interface LeaderboardEntry {
@@ -24,16 +25,6 @@ function Leaderboard() {
     if (session) {
       const fetchData = async () => {
         try {
-          // Format today's date without leading zeros
-          const today = new Date()
-            .toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            })
-            .split("/")
-            .join("-");
-
           // Fetch friends data
           const response = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/friends?user_id=${session.user.user_id}&status=ACCEPTED`
@@ -49,10 +40,9 @@ function Leaderboard() {
             user_id: session.user.user_id,
             name: session.user.name,
             location: session.user.location || "N/A",
-            score:
-              userResult.data[0]?.date === today
-                ? userResult.data[0]?.score
-                : null,
+            score: isSameDay(userResult.data[0]?.date, getToday())
+              ? userResult.data[0]?.score
+              : null,
           };
 
           // Create entries for friends

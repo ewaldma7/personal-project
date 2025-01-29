@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Scorecard from "./Scorecard";
 import { Text, Group, Pagination, Container } from "@mantine/core";
 import { Guess, Result } from "@prisma/client";
+import { isSameDay } from "../lib/dateUtils";
 
 interface ExtendedResult extends Result {
   guesses: Guess[];
@@ -33,7 +34,9 @@ const PastGames: React.FC<Props> = ({ results, previousDates }) => {
       </div>
       <div className="grid grid-cols-4 gap-4 mb-4">
         {displayedDates.map((date) => {
-          const result = results.find((r) => r.date === date);
+          // Find the matching result by comparing dates
+          const result = results.find((r) => isSameDay(r.date, date));
+
           return (
             <div key={date} className="flex justify-center">
               <Scorecard result={result} date={date} />
