@@ -56,14 +56,11 @@ function Leaderboard() {
           };
 
           // Create entries for friends
-          const friendEntries = response.data.map((friend: any) => ({
-            user_id: friend.friend.user_id,
-            name: friend.friend.name,
-            location: friend.friend.location || "N/A",
-            score:
-              friend.friend.results[0]?.date === today
-                ? friend.friend.results[0]?.score
-                : null,
+          const friendEntries = response.data.map(({ friend }: any) => ({
+            user_id: friend.user_id,
+            name: friend.name,
+            location: friend.location || "N/A",
+            score: friend.results[0]?.score,
           }));
 
           // Combine and sort all entries

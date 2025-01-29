@@ -1,6 +1,6 @@
 "use client";
-import { Menu, Text, rem, Avatar } from "@mantine/core";
-import { IconSearch, IconTrash, IconBell } from "@tabler/icons-react";
+import { Menu, rem, Avatar } from "@mantine/core";
+import { IconTrash, IconBell } from "@tabler/icons-react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
