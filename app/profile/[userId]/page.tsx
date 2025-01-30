@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from "react-icons/fi";
 import { useDisclosure } from "@mantine/hooks";
@@ -17,25 +17,22 @@ function UserProfile({ params }: { params: { userId: string } }) {
     guesses: Guess[];
   }
 
-  type CategoryObject = { category: string; percentage: number };
+  const CATEGORIES = {
+    ART: { color: "text-red-600" },
+    ENTERTAINMENT: { color: "text-pink-600" },
+    GEOGRAPHY: { color: "text-blue-600" },
+    HISTORY: { color: "text-yellow-600" },
+    SCIENCE: { color: "text-green-600" },
+    SPORTS: { color: "text-orange-600" },
+  } as const;
 
-  const CATEGORIES = useMemo(
-    () => ["ART", "ENTERTAINMENT", "GEOGRAPHY", "HISTORY", "SCIENCE", "SPORTS"],
-    []
-  );
-  const CATEGORY_COLOR_MAP = new Map<string, string>([
-    ["ENTERTAINMENT", "text-pink-600"],
-    ["SPORTS", "text-orange-600"],
-    ["ART", "text-red-600"],
-    ["SCIENCE", "text-green-600"],
-    ["GEOGRAPHY", "text-blue-600"],
-    ["HISTORY", "text-yellow-600"],
-  ]);
   const [results, setResults] = useState<Result[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [avgScore, setAvgScore] = useState(0);
-  const [catMap, setCatMap] = useState<CategoryObject[]>([]);
+  const [categoryStats, setCategoryStats] = useState<
+    { category: string; percentage: number }[]
+  >([]);
   const [friends, setFriends] = useState([]);
   const [opened, { open, close }] = useDisclosure(false);
   const [requestEmail, setRequestEmail] = useState("");
@@ -99,19 +96,22 @@ function UserProfile({ params }: { params: { userId: string } }) {
   }, [results]);
 
   useEffect(() => {
-    const categoryPercentages = Array.from(
-      guesses.reduce((stats, guess) => {
-        const { category, isCorrect } = guess;
-        stats.get(category)!.total += 1;
-        stats.get(category)!.correct += isCorrect ? 1 : 0;
-        return stats;
-      }, new Map<string, { total: number; correct: number }>(CATEGORIES.map((category) => [category, { total: 0, correct: 0 }])))
-    ).map(([category, { total, correct }]) => ({
+    const stats = guesses.reduce((acc, guess) => {
+      acc[guess.category] = acc[guess.category] || { correct: 0, total: 0 };
+      acc[guess.category].total++;
+      if (guess.isCorrect) acc[guess.category].correct++;
+      return acc;
+    }, {} as Record<string, { correct: number; total: number }>);
+
+    const categoryPercentages = Object.keys(CATEGORIES).map((category) => ({
       category,
-      percentage: total === 0 ? NaN : (correct / total) * 100,
+      percentage: stats[category]?.total
+        ? (stats[category].correct / stats[category].total) * 100
+        : NaN,
     }));
-    setCatMap(categoryPercentages);
-  }, [guesses, CATEGORIES]);
+
+    setCategoryStats(categoryPercentages);
+  }, [guesses]);
 
   const renderAvatar = (name: string) => {
     const initials = name
@@ -202,22 +202,22 @@ function UserProfile({ params }: { params: { userId: string } }) {
         <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/2">
           <h2 className="text-2xl font-bold mb-8">Category Percentages</h2>
           <div className="grid grid-cols-3 gap-4">
-            {catMap.map((categoryObj) => (
-              <div key={categoryObj.category} className="mb-4 text-center">
+            {categoryStats.map(({ category, percentage }) => (
+              <div key={category} className="mb-4 text-center">
                 <span
-                  className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl ${CATEGORY_COLOR_MAP.get(
-                    categoryObj.category
-                  )} font-semibold mb-2`}
+                  className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl ${
+                    CATEGORIES[category as keyof typeof CATEGORIES].color
+                  } font-semibold mb-2`}
                 >
-                  {categoryObj.category}
+                  {category}
                 </span>
                 <span
-                  className={`block text-4xl ${CATEGORY_COLOR_MAP.get(
-                    categoryObj.category
-                  )} font-bold`}
+                  className={`block text-4xl ${
+                    CATEGORIES[category as keyof typeof CATEGORIES].color
+                  } font-bold`}
                 >
-                  {!Number.isNaN(categoryObj.percentage)
-                    ? `${categoryObj.percentage.toFixed(0)}%`
+                  {!Number.isNaN(percentage)
+                    ? `${percentage.toFixed(0)}%`
                     : "N/A"}
                 </span>
               </div>

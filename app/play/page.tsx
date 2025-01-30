@@ -8,6 +8,7 @@ import { CATEGORY_COLOR_MAP } from "@/constants";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getToday } from "../lib/dateUtils";
 import { Question, Guess, Category } from "@prisma/client";
+import { Badge } from "@mantine/core";
 
 type id = number | null;
 type PendingGuess = Omit<Guess, "id" | "result_id">;
@@ -157,25 +158,13 @@ const GamePage = () => {
 
         {/* Category badge */}
         <div className="flex justify-center mb-8">
-          <span
-            style={{
-              backgroundColor: `${CATEGORY_COLOR_MAP.get(
-                currentQuestion?.category as string
-              )}15`,
-              color: CATEGORY_COLOR_MAP.get(
-                currentQuestion?.category as string
-              ),
-              border: `2px solid ${CATEGORY_COLOR_MAP.get(
-                currentQuestion?.category as string
-              )}`,
-              boxShadow: `0 2px 8px ${CATEGORY_COLOR_MAP.get(
-                currentQuestion?.category as string
-              )}25`,
-            }}
-            className="inline-flex items-center px-6 py-2 rounded-full text-base font-semibold transform transition-transform hover:scale-105"
+          <Badge
+            size="xl"
+            variant="outline"
+            color={CATEGORY_COLOR_MAP.get(currentQuestion?.category as string)}
           >
             {currentQuestion?.category}
-          </span>
+          </Badge>
         </div>
 
         {/* Question */}
