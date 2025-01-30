@@ -10,34 +10,11 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { Result, Guess, User } from "@prisma/client";
 
 function UserProfile({ params }: { params: { userId: string } }) {
-  interface User {
-    user_id: number;
-    name: string;
-    email: string;
-    location: string | null;
-    role: number;
-  }
-
-  interface Result {
-    result_id: number;
-    user_id: number;
-    game_id: number;
-    answers: string[];
-    score: number;
+  interface ExtendedResult extends Result {
     guesses: Guess[];
-    date: string;
-  }
-
-  interface Guess {
-    id: number;
-    question_id: number;
-    result_id: number;
-    user_id: number;
-    category: string;
-    guess: string;
-    isCorrect: boolean;
   }
 
   type CategoryObject = { category: string; percentage: number };
@@ -84,7 +61,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
         setResults(resultsResponse.data);
         setUser(user.data);
         const allGuesses: Guess[] = resultsResponse.data.reduce(
-          (combinedGuesses: Guess[], result: Result) => {
+          (combinedGuesses: Guess[], result: ExtendedResult) => {
             return combinedGuesses.concat(result.guesses);
           },
           []

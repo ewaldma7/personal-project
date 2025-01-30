@@ -26,14 +26,14 @@ function Leaderboard() {
       const fetchData = async () => {
         try {
           // Fetch friends data
-          const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/friends?user_id=${session.user.user_id}&status=ACCEPTED`
-          );
-
-          // Get current user's result
-          const userResult = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`
-          );
+          const [response, userResult] = await Promise.all([
+            axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/friends?user_id=${session.user.user_id}&status=ACCEPTED`
+            ),
+            axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/*`
+            ),
+          ]);
 
           // Create entry for current user
           const currentUserEntry: LeaderboardEntry = {
