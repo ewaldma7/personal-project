@@ -4,6 +4,7 @@ import { Badge, Card, Center, Group, Text, Rating } from "@mantine/core";
 import Link from "next/link";
 import { IconCheck, IconPointFilled, IconMinus } from "@tabler/icons-react";
 import { Guess } from "@prisma/client";
+import { DAYS_OF_WEEK } from "@/constants";
 
 interface ScorecardProps {
   result?: {
@@ -18,15 +19,6 @@ interface ScorecardProps {
 }
 
 const Scorecard: React.FC<ScorecardProps> = ({ result, date }) => {
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
 
   // Parse the date in local timezone
   const [year, month, day] = date.split("-").map(Number);
@@ -69,7 +61,7 @@ const Scorecard: React.FC<ScorecardProps> = ({ result, date }) => {
           tt="uppercase"
           c={result ? undefined : "#495057"}
         >
-          {daysOfWeek[currDate.getDay()]}
+          {DAYS_OF_WEEK[currDate.getDay()]}
         </Text>
       </Center>
       <Group mt="md" mb="xs">

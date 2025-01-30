@@ -3,34 +3,20 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { Status } from "@prisma/client";
 import { Text, Title, SegmentedControl } from "@mantine/core";
 import { IconBell, IconCheck } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useSession } from "next-auth/react";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { User, Friend } from "@prisma/client";
 
 function Notifications() {
-  interface User {
-    user_id: number;
-    name: string;
-    email: string;
-    location: string | null;
-    role: string | null;
-  }
-
-  interface Friend {
-    created_at: Date;
+  interface ExtendedFriend extends Friend {
     friend: User;
-    user_id: number;
-    friend_id: number;
-    user_requested: Boolean;
-    status: Status;
   }
 
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
-  const [user, setUser] = useState<User[]>([]);
+  const [friends, setFriends] = useState<ExtendedFriend[]>([]);
+  const [filteredFriends, setFilteredFriends] = useState<ExtendedFriend[]>([]);
   const [loading, setLoading] = useState(true);
   const [value, setValue] = useState("r");
   const { data: session } = useSession();
@@ -45,10 +31,6 @@ function Notifications() {
             }/&status=${"PENDING"}`
           );
           setFriends(friendsResponse.data);
-          const user = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/users/${session?.user.user_id}`
-          );
-          setUser(user.data);
           setLoading(false);
         } catch (error) {
           console.log(error);
@@ -59,13 +41,11 @@ function Notifications() {
   }, [session]);
 
   useEffect(() => {
-    if (value === "r") {
-      //received
-      setFilteredFriends(friends.filter((friend) => !friend.user_requested));
-    } else if (value === "s") {
-      //sent
-      setFilteredFriends(friends.filter((friend) => friend.user_requested));
-    }
+    setFilteredFriends(
+      friends.filter((friend) =>
+        value === "r" ? !friend.user_requested : friend.user_requested
+      )
+    );
   }, [value, friends, session]);
 
   const answerRequest = async (

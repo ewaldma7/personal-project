@@ -8,37 +8,10 @@ import { Avatar, Text, Accordion, Title, Badge, Grid } from "@mantine/core";
 import { CATEGORY_COLOR_MAP } from "@/constants";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { Guess, Question, Result } from "@prisma/client";
 
-interface Result {
-  result_id: Number;
-  user_id: Number;
-  game_id: Number;
-  answers: String[];
-  score: Number;
+interface ExtendedResult extends Result {
   guesses: Guess[];
-}
-
-interface Guess {
-  id: Number;
-  user_id: Number;
-  question_id: Number;
-  result_id: Number;
-  guess: String;
-  category: string;
-  isCorrect: boolean;
-}
-interface Question {
-  question_id: number;
-  question: string;
-  correctChoice: string;
-  answer: string;
-  category: string;
-  createdAt: Date;
-  updatedAt: Date | null;
-}
-
-interface AccLabelProps {
-  guess: Guess;
 }
 
 function ResultsPage({ params }: { params: { date: string } }) {
@@ -49,7 +22,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  function AccordionLabel({ guess }: AccLabelProps) {
+  function AccordionLabel({ guess }: { guess: Guess }) {
     return (
       <Grid className="ml-5">
         <Grid.Col span={1}>
@@ -130,7 +103,7 @@ function ResultsPage({ params }: { params: { date: string } }) {
           const resultResponse = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/results/${userId}/${gameData.game_id}`
           );
-          const resultData: Result = resultResponse.data;
+          const resultData: ExtendedResult = resultResponse.data;
           if (Object.keys(resultData).length === 0) {
             router.push("/dashboard");
           } else {

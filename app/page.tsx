@@ -1,12 +1,14 @@
-'use client'
-import React from 'react';
-import Link from 'next/link';
+"use client";
+import React from "react";
+import Link from "next/link";
 
 function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="max-w-lg text-center">
-        <h1 className="text-4xl font-bold mb-8 text-gray-800">Daily Trivia Game</h1>
+        <h1 className="text-4xl font-bold mb-8 text-gray-800">
+          Daily Trivia Game
+        </h1>
         <p className="text-lg mb-6 text-gray-600">
           Compete with friends, answer daily trivia, and have fun!
         </p>

@@ -7,27 +7,10 @@ import { useSession } from "next-auth/react";
 import { CATEGORY_COLOR_MAP } from "@/constants";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { getToday } from "../lib/dateUtils";
-
-interface Question {
-  question_id: number;
-  question: string;
-  correctChoice: string;
-  choices: string[];
-  category: string;
-  createdAt: Date;
-  updatedAt: Date | null;
-}
-
-interface Guess {
-  question_id?: number;
-  category?: string;
-  guess?: string;
-  isCorrect?: boolean;
-  user_id?: number;
-  result_id?: number;
-}
+import { Question, Guess, Category } from "@prisma/client";
 
 type id = number | null;
+type PendingGuess = Omit<Guess, "id" | "result_id">;
 
 const GamePage = () => {
   const NUM_QUESTIONS = 5;
@@ -38,13 +21,11 @@ const GamePage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [guesses, setGuesses] = useState<Guess[]>([]);
+  const [guesses, setGuesses] = useState<PendingGuess[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [count, setCount] = useState<number>(0);
   const [arr, setArr] = useState<(number | null)[]>(new Array(5).fill(null));
   const todayDate = getToday();
-
-  //reroute to result page if already played
 
   useEffect(() => {
     const checkIfPlayed = async () => {
@@ -89,7 +70,7 @@ const GamePage = () => {
       const newGuesses = [...prevGuesses];
       newGuesses[count] = {
         question_id: currentQuestion.question_id,
-        category: currentQuestion.category,
+        category: currentQuestion.category as Category,
         guess,
         isCorrect: guess === currentQuestion.correctChoice,
         user_id: session.user.user_id,
@@ -124,7 +105,7 @@ const GamePage = () => {
     const finalGuesses = [...guesses];
     finalGuesses[count] = {
       question_id: currentQuestion.question_id,
-      category: currentQuestion.category,
+      category: currentQuestion.category as Category,
       guess,
       isCorrect: guess === currentQuestion.correctChoice,
       user_id: session.user.user_id,
