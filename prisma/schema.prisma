@@ -49,6 +49,7 @@ model Question {
   updatedAt     DateTime? @updatedAt @db.Date
   choices       String[]
   correctChoice String    @db.VarChar(255)
+  used          Boolean   @default(false)
   guesses       Guess[]
   games         Game[]    @relation("GameToQuestion")
 }
@@ -79,6 +80,15 @@ model Guess {
   user        User     @relation(fields: [user_id], references: [user_id])
 
   @@unique([user_id, question_id, result_id])
+}
+
+model UsedTopic {
+  id        Int      @id @default(autoincrement())
+  category  Category
+  name      String
+  createdAt DateTime @default(now())
+
+  @@unique([category, name])
 }
 
 enum Role {
