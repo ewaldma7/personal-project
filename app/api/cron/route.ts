@@ -1,32 +1,16 @@
-import { Category, PrismaClient } from "@prisma/client";
+import { Category } from "@prisma/client";
+import prisma from "@/app/lib/client";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import { NextRequest, NextResponse } from "next/server";
 dotenv.config();
-
-// Initialize both dev and prod Prisma clients
-const devPrisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.POSTGRES_PRISMA_URL_DEV,
-    },
-  },
-});
-
-const prodPrisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.POSTGRES_PRISMA_URL,
-    },
-  },
-});
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Categories from your existing code
-const categories = [
+const categories: Category[] = [
   "HISTORY",
   "GEOGRAPHY",
   "SCIENCE",
@@ -42,22 +26,15 @@ interface Question {
   category: string;
 }
 
-async function getUsedTopics(
-  prisma: PrismaClient,
-  category?: string
-): Promise<string[]> {
+async function getUsedTopics(category?: Category): Promise<string[]> {
   const topics = await prisma.usedTopic.findMany({
-    where: category ? { category: category as Category } : undefined,
+    where: category ? { category } : undefined,
     select: { name: true },
   });
   return topics.map((t) => t.name);
 }
 
-async function markTopicAsUsed(
-  prisma: PrismaClient,
-  category: Category,
-  name: string
-) {
+async function markTopicAsUsed(category: Category, name: string) {
   await prisma.usedTopic.create({
     data: {
       category,
@@ -131,14 +108,8 @@ async function generateQuestionsForTopic(
 }
 
 async function saveQuestionsToDatabase(questions: Question[]) {
-  console.log("Saving questions to development database...");
-  await devPrisma.question.createMany({
-    data: questions,
-    skipDuplicates: true,
-  });
-
-  console.log("Saving questions to production database...");
-  await prodPrisma.question.createMany({
+  console.log("Saving questions to database...");
+  await prisma.question.createMany({
     data: questions,
     skipDuplicates: true,
   });
@@ -150,7 +121,7 @@ async function createNextDayGame() {
   tomorrow.setHours(0, 0, 0, 0);
 
   // Check if game already exists for tomorrow
-  const existingGame = await prodPrisma.game.findUnique({
+  const existingGame = await prisma.game.findUnique({
     where: { date: tomorrow },
   });
 
@@ -162,7 +133,7 @@ async function createNextDayGame() {
   // Select one unused question from each category
   const selectedQuestions = [];
   for (const category of categories) {
-    const question = await prodPrisma.question.findFirst({
+    const question = await prisma.question.findFirst({
       where: {
         category,
         used: false,
@@ -172,7 +143,7 @@ async function createNextDayGame() {
     if (question) {
       selectedQuestions.push(question);
       // Mark question as used
-      await prodPrisma.question.update({
+      await prisma.question.update({
         where: { question_id: question.question_id },
         data: { used: true },
       });
@@ -184,17 +155,7 @@ async function createNextDayGame() {
   }
 
   // Create game for tomorrow
-  await prodPrisma.game.create({
-    data: {
-      date: tomorrow,
-      questions: {
-        connect: selectedQuestions.map((q) => ({ question_id: q.question_id })),
-      },
-    },
-  });
-
-  // Mirror to dev database
-  await devPrisma.game.create({
+  await prisma.game.create({
     data: {
       date: tomorrow,
       questions: {
@@ -219,26 +180,24 @@ export async function GET(request: NextRequest) {
 
   try {
     // Check if we need to generate new questions
-    const unusedQuestionCount = await prodPrisma.question.count({
+    const unusedQuestionCount = await prisma.question.count({
       where: { used: false },
     });
 
     if (unusedQuestionCount < 10) {
       // Generate more questions when pool is low
       console.log("Generating new questions...");
-      // Your existing question generation code here
       for (const category of categories) {
-        const categoryUsedTopics = await getUsedTopics(prodPrisma, category);
+        const categoryUsedTopics = await getUsedTopics(category);
         const newTopics = await generateTopicsForCategory(
-          category as Category,
+          category,
           categoryUsedTopics
         );
 
         for (const topic of newTopics) {
           const questions = await generateQuestionsForTopic(topic, category);
           await saveQuestionsToDatabase(questions);
-          await markTopicAsUsed(prodPrisma, category as Category, topic);
-          await markTopicAsUsed(devPrisma, category as Category, topic);
+          await markTopicAsUsed(category, topic);
         }
       }
     }
@@ -257,7 +216,6 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await devPrisma.$disconnect();
-    await prodPrisma.$disconnect();
+    await prisma.$disconnect();
   }
 }
