@@ -14,7 +14,6 @@ type id = number | null;
 type PendingGuess = Omit<Guess, "id" | "result_id">;
 
 const GamePage = () => {
-  const NUM_QUESTIONS = 5;
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -25,36 +24,37 @@ const GamePage = () => {
   const [guesses, setGuesses] = useState<PendingGuess[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [count, setCount] = useState<number>(0);
-  const [arr, setArr] = useState<(number | null)[]>(new Array(5).fill(null));
+  const [arr, setArr] = useState<(number | null)[]>([]);
   const todayDate = getToday();
 
   useEffect(() => {
-    const checkIfPlayed = async () => {
-      const result = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/results/${session?.user.user_id}/${gameId}`
-      );
-      if (Object.keys(result.data).length) {
-        router.push(`/results/${todayDate}`);
-      } else {
+    const fetchData = async () => {
+      try {
+        const game = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/games?date=${todayDate}`
+        );
+        setGameId(game.data.game_id);
+        setQuestions(game.data.questions);
+        setCurrentQuestion(game.data.questions[0]);
+        setArr(new Array(game.data.questions.length).fill(null));
+
+        if (session && game.data.game_id) {
+          const result = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/results/${session.user.user_id}/${game.data.game_id}`
+          );
+          if (Object.keys(result.data).length) {
+            router.push(`/results/${todayDate}`);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
         setLoading(false);
       }
     };
-    if (session && gameId) {
-      checkIfPlayed();
-    }
-  }, [gameId, session, router, todayDate]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const game = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/games?date=${todayDate}`
-      );
-      setGameId(game.data.game_id);
-      setQuestions(game.data.questions);
-      setCurrentQuestion(game.data.questions[0]);
-    };
     fetchData();
-  }, [todayDate]);
+  }, [todayDate, session, router]);
 
   const updateData = () => {
     if (
@@ -89,8 +89,8 @@ const GamePage = () => {
 
     updateData();
     setSelectedOption(arr[count + 1]);
-    setCurrentQuestion(questions[(count + 1) % NUM_QUESTIONS]);
-    setCount((count + 1) % NUM_QUESTIONS);
+    setCurrentQuestion(questions[(count + 1) % questions.length]);
+    setCount((count + 1) % questions.length);
   };
 
   const handleAnswerSubmit = async () => {
@@ -145,13 +145,13 @@ const GamePage = () => {
         <div className="mb-8">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>
-              Question {count + 1} of {NUM_QUESTIONS}
+              Question {count + 1} of {questions.length}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(count / NUM_QUESTIONS) * 100}%` }}
+              style={{ width: `${(count / questions.length) * 100}%` }}
             ></div>
           </div>
         </div>
@@ -207,9 +207,11 @@ const GamePage = () => {
         {/* Navigation button */}
         <div className="flex justify-center">
           <button
-            disabled={count === NUM_QUESTIONS - 1 && selectedOption === null}
+            disabled={count === questions.length - 1 && selectedOption === null}
             onClick={
-              count < NUM_QUESTIONS - 1 ? handleAnswerNext : handleAnswerSubmit
+              count < questions.length - 1
+                ? handleAnswerNext
+                : handleAnswerSubmit
             }
             className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 ${
               selectedOption === null
@@ -217,7 +219,7 @@ const GamePage = () => {
                 : "bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl"
             }`}
           >
-            {count < NUM_QUESTIONS - 1 ? (
+            {count < questions.length - 1 ? (
               <span className="flex items-center">
                 Next Question
                 <svg

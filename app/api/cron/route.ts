@@ -9,21 +9,13 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Categories from your existing code
-const categories: Category[] = [
-  "HISTORY",
-  "GEOGRAPHY",
-  "SCIENCE",
-  "SPORTS",
-  "ART",
-  "ENTERTAINMENT",
-];
+const categories = Object.values(Category);
 
 interface Question {
   question: string;
   correctChoice: string;
   choices: string[];
-  category: string;
+  category: Category;
 }
 
 async function getUsedTopics(category?: Category): Promise<string[]> {

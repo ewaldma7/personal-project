@@ -3,18 +3,11 @@
 import { Badge, Card, Center, Group, Text, Rating } from "@mantine/core";
 import Link from "next/link";
 import { IconCheck, IconPointFilled, IconMinus } from "@tabler/icons-react";
-import { Guess } from "@prisma/client";
+import { Guess, Result } from "@prisma/client";
 import { DAYS_OF_WEEK } from "@/constants";
 
 interface ScorecardProps {
-  result?: {
-    result_id: number;
-    user_id: number;
-    game_id: number;
-    guesses: Guess[];
-    score: number;
-    date: Date;
-  };
+  result?: Result & { guesses: Guess[] };
   date: string;
 }
 
@@ -78,6 +71,7 @@ const Scorecard: React.FC<ScorecardProps> = ({ result, date }) => {
           emptySymbol={getIcon}
           fullSymbol={getIcon}
           readOnly
+          count={result?.guesses.length || 6}
           className="mx-auto"
         />
       </Group>
