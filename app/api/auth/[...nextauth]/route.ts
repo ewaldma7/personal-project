@@ -22,9 +22,9 @@ const handler = NextAuth({
 
         try {
           console.log("Attempting login for:", credentials.username);
-          console.log("API URL:", "/api/login");
+          console.log("API URL:", process.env.NEXT_PUBLIC_API_URL + "/login");
 
-          const res = await fetch("/api/login", {
+          const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
