@@ -5,7 +5,9 @@ import { signJwtAccessToken } from "@/app/lib/jwt";
 
 export async function POST(request: NextRequest) {
     try {
+        console.log("Login route hit");
         const body = await request.json();
+        console.log("Request body:", body);
         const { email, password } = body;
         const user = await prisma.user.findUnique({
             where: {
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(null);
         }
     } catch (error) {
+        console.error("Login route error:", error);
         return NextResponse.json('Error logging in', { status: 500 });
     }
 }
