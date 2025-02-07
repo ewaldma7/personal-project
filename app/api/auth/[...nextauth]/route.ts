@@ -16,13 +16,10 @@ const handler = NextAuth({
       },
       async authorize(credentials, req) {
         if (!credentials?.username || !credentials?.password) {
-          console.log("Missing credentials");
           return null;
         }
 
         try {
-          console.log("Attempting login for:", credentials.username);
-          console.log("API URL:", process.env.NEXT_PUBLIC_API_URL + "/login");
 
           const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/login", {
             method: "POST",
@@ -35,10 +32,7 @@ const handler = NextAuth({
             }),
           });
 
-          console.log("Login response status:", res.status);
-
           const user = await res.json();
-          console.log("Login response:", user);
 
           if (user) {
             return user;
@@ -62,13 +56,10 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log("JWT Callback - Token:", token);
-      console.log("JWT Callback - User:", user);
       return { ...token, ...user };
     },
     async session({ session, token }) {
-      console.log("Session Callback - Session:", session);
-      console.log("Session Callback - Token:", token);
+      session.user = token as any;
       return session;
     },
   },
