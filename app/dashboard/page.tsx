@@ -86,7 +86,7 @@ const Dashboard = () => {
         color="var(--mantine-color-yellow-filled)"
       />
 
-      <Title className="font-extrabold mb-12">
+      <Title className="font-extrabold mb-12 text-center">
         Welcome {session?.user.name}!
       </Title>
 

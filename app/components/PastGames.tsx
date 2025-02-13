@@ -16,7 +16,8 @@ interface Props {
 }
 
 const PastGames: React.FC<Props> = ({ results, previousDates }) => {
-  const itemsPerPage = 4;
+  const itemsPerPage =
+    window.innerWidth > 768 ? 4 : window.innerWidth > 480 ? 2 : 1;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(previousDates.length / itemsPerPage);
 
@@ -36,7 +37,7 @@ const PastGames: React.FC<Props> = ({ results, previousDates }) => {
           Past Games
         </Text>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {displayedDates.map((date) => {
           const result = results.find((r) => isSameDay(r.date, date));
           return (

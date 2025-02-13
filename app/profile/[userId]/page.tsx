@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { FiMail, FiMapPin, FiUsers, FiCalendar, FiStar } from "react-icons/fi";
 import { useDisclosure } from "@mantine/hooks";
@@ -17,14 +17,16 @@ function UserProfile({ params }: { params: { userId: string } }) {
     guesses: Guess[];
   }
 
-  const CATEGORIES = {
-    ART: { color: "text-red-600" },
-    ENTERTAINMENT: { color: "text-pink-600" },
-    GEOGRAPHY: { color: "text-blue-600" },
-    HISTORY: { color: "text-yellow-600" },
-    SCIENCE: { color: "text-green-600" },
-    SPORTS: { color: "text-orange-600" },
-  } as const;
+  const CATEGORIES = useMemo(() => {
+    return {
+      ART: { color: "text-red-600" },
+      ENTERTAINMENT: { color: "text-pink-600" },
+      GEOGRAPHY: { color: "text-blue-600" },
+      HISTORY: { color: "text-yellow-600" },
+      SCIENCE: { color: "text-green-600" },
+      SPORTS: { color: "text-orange-600" },
+    } as const;
+  }, []);
 
   const [results, setResults] = useState<Result[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -111,7 +113,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
     }));
 
     setCategoryStats(categoryPercentages);
-  }, [guesses]);
+  }, [guesses, CATEGORIES]);
 
   const renderAvatar = (name: string) => {
     const initials = name
@@ -170,49 +172,53 @@ function UserProfile({ params }: { params: { userId: string } }) {
     <LoadingSpinner />
   ) : (
     <>
-      <div className="container mx-auto mt-8 flex flex-col lg:flex-row gap-8">
-        <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
+      <div className="container mx-auto px-4 mt-8 flex flex-col lg:flex-row gap-4">
+        <div className="p-6 bg-white rounded-lg shadow-lg w-full lg:w-1/3 border border-gray-200">
           <h2 className="text-2xl font-bold mb-4">Profile</h2>
           <div className="flex flex-col">
             <div className="mb-4 flex items-center">
               <h2 className="text-2xl font-semibold mb-2 mr-2">{user?.name}</h2>
             </div>
-            <p className="text-gray-600 flex items-center">
+            <p className="text-gray-600 flex items-center mb-2">
               <FiMail className="mr-2" /> {user?.email}
             </p>
-            <p className="text-gray-600 flex items-center">
+            <p className="text-gray-600 flex items-center mb-4">
               <FiMapPin className="mr-2" /> {user?.location}
             </p>
-            <div className="flex items-center my-4">
-              <FiCalendar className="text-4xl mr-4 text-blue-500" />
-              <div>
-                <p className="text-xl font-semibold">Days Played</p>
-                <p className="text-gray-600 text-4xl">{results.length}</p>
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+              <div className="flex items-center">
+                <FiCalendar className="text-4xl mr-4 text-blue-500" />
+                <div>
+                  <p className="text-xl font-semibold">Days Played</p>
+                  <p className="text-gray-600 text-4xl">{results.length}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center">
-              <FiStar className="text-4xl mr-4 text-yellow-500" />
-              <div>
-                <p className="text-xl font-semibold">Average Score</p>
-                <p className="text-gray-600 text-4xl">{avgScore.toFixed(2)}</p>
+              <div className="flex items-center">
+                <FiStar className="text-4xl mr-4 text-yellow-500" />
+                <div>
+                  <p className="text-xl font-semibold">Average Score</p>
+                  <p className="text-gray-600 text-4xl">
+                    {avgScore.toFixed(2)}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/2">
+        <div className="p-6 bg-white rounded-lg shadow-lg w-full lg:w-1/2 border border-gray-200">
           <h2 className="text-2xl font-bold mb-8">Category Percentages</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             {categoryStats.map(({ category, percentage }) => (
               <div key={category} className="mb-4 text-center">
                 <span
-                  className={`block 2xl:text-xl xl:text-lg lg:text-sm md:text-xl ${
+                  className={`block text-base sm:text-lg lg:text-xl ${
                     CATEGORIES[category as keyof typeof CATEGORIES].color
                   } font-semibold mb-2`}
                 >
                   {category}
                 </span>
                 <span
-                  className={`block text-4xl ${
+                  className={`block text-2xl sm:text-3xl lg:text-4xl ${
                     CATEGORIES[category as keyof typeof CATEGORIES].color
                   } font-bold`}
                 >
@@ -224,10 +230,9 @@ function UserProfile({ params }: { params: { userId: string } }) {
             ))}
           </div>
         </div>
-
-        <div className="p-6 bg-gray-100 rounded-lg shadow-lg w-full lg:w-1/3">
+        <div className="p-6 bg-white rounded-lg shadow-lg w-full lg:w-1/3 border border-gray-200">
           <h2 className="text-2xl font-bold mb-4">Friends</h2>
-          <div className="text-gray-600 max-h-72 overflow-y-auto">
+          <div className="text-gray-600 max-h-[50vh] lg:max-h-72 overflow-y-auto mb-4">
             {friends.map((friend: any) => renderFriendCard(friend.friend))}
           </div>
 
@@ -257,10 +262,9 @@ function UserProfile({ params }: { params: { userId: string } }) {
           {session?.user.user_id === parseInt(params.userId) && (
             <button
               onClick={open}
-              className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-2 px-4 mt-4 rounded"
+              className="bg-yellow-700 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded w-full sm:w-auto"
             >
-              <FiUsers className="mr-2" style={{ display: "inline" }} /> Add
-              Friends
+              <FiUsers className="mr-2 inline-block" /> Add Friends
             </button>
           )}
         </div>
