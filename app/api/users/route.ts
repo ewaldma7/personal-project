@@ -3,6 +3,8 @@ import prisma from "@/app/lib/client";
 import { createUserSchema } from "@/app/validationSchemas";
 import bcrypt from "bcrypt";
 import { verifyJwt } from "@/app/lib/jwt";
+import { sendVerificationEmail } from "@/app/lib/email";
+import { generateVerificationToken } from "@/app/lib/verificationToken";
 
 async function hashPassword(password: string): Promise<string> {
   try {
@@ -20,24 +22,40 @@ export async function POST(request: NextRequest) {
     if (!validation.success) {
       return NextResponse.json(validation.error.format(), { status: 400 });
     }
+
     const existingUser = await prisma.user.findUnique({
-      where: {
-        email: body.email,
-      },
+      where: { email: body.email },
     });
+
     if (existingUser) {
       return NextResponse.json("User with this email already exists", {
         status: 400,
       });
     }
+
     const password_hash = await hashPassword(body.password);
+    const verificationToken = generateVerificationToken(body.email);
+
     const newUser = await prisma.user.create({
       data: {
         name: body.name,
         email: body.email,
-        password_hash: password_hash,
+        password_hash,
+        verified: false,
       },
     });
+
+    const emailSent = await sendVerificationEmail(
+      body.email,
+      verificationToken
+    );
+    if (!emailSent) {
+      await prisma.user.delete({ where: { user_id: newUser.user_id } });
+      return NextResponse.json("Failed to send verification email", {
+        status: 500,
+      });
+    }
+
     const { password_hash: _, ...userResponse } = newUser;
     return NextResponse.json(userResponse, { status: 201 });
   } catch (error) {

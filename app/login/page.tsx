@@ -8,13 +8,15 @@ import { useRouter } from "next/navigation";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [guessed, setGuessed] = useState(false);
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const logIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
+
     try {
       const res = await signIn("credentials", {
         username: email,
@@ -22,14 +24,13 @@ export default function Login() {
         redirect: false,
         callbackUrl: "/dashboard",
       });
+
       if (res?.ok) {
-        // Login successful
         router.push("/dashboard");
-        console.log("Login successful");
+      } else if (res?.error === "UnverifiedEmail") {
+        setError("Please verify your email address before logging in.");
       } else {
-        // Login failed
-        setGuessed(true);
-        console.error("Login failed");
+        setError("Invalid email or password");
       }
     } finally {
       setIsLoading(false);
@@ -105,9 +106,6 @@ export default function Login() {
                 >
                   Password
                 </label>
-                {guessed && (
-                  <h3 style={{ color: "red" }}>Invalid Email or Password</h3>
-                )}
               </div>
               <div className="mt-2">
                 <input
@@ -121,6 +119,9 @@ export default function Login() {
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
+              {error && (
+                <div className="mt-2 text-sm text-red-600">{error}</div>
+              )}
             </div>
             <div>
               <button
