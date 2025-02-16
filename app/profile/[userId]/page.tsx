@@ -172,8 +172,8 @@ function UserProfile({ params }: { params: { userId: string } }) {
     <LoadingSpinner />
   ) : (
     <>
-      <div className="container mx-auto px-4 mt-8 flex flex-col lg:flex-row gap-4">
-        <div className="p-6 bg-white rounded-lg shadow-lg w-full lg:w-1/3 border border-gray-200">
+      <div className="container mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200 min-h-[250px]">
           <h2 className="text-2xl font-bold mb-4">Profile</h2>
           <div className="flex flex-col">
             <div className="mb-4 flex items-center">
@@ -185,19 +185,19 @@ function UserProfile({ params }: { params: { userId: string } }) {
             <p className="text-gray-600 flex items-center mb-4">
               <FiMapPin className="mr-2" /> {user?.location}
             </p>
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center">
                 <FiCalendar className="text-4xl mr-4 text-blue-500" />
                 <div>
-                  <p className="text-xl font-semibold">Days Played</p>
-                  <p className="text-gray-600 text-4xl">{results.length}</p>
+                  <p className="text-lg font-semibold">Days Played</p>
+                  <p className="text-gray-600 text-2xl">{results.length}</p>
                 </div>
               </div>
               <div className="flex items-center">
                 <FiStar className="text-4xl mr-4 text-yellow-500" />
                 <div>
-                  <p className="text-xl font-semibold">Average Score</p>
-                  <p className="text-gray-600 text-4xl">
+                  <p className="text-lg font-semibold">Average Score</p>
+                  <p className="text-gray-600 text-2xl">
                     {avgScore.toFixed(2)}
                   </p>
                 </div>
@@ -205,20 +205,20 @@ function UserProfile({ params }: { params: { userId: string } }) {
             </div>
           </div>
         </div>
-        <div className="p-6 bg-white rounded-lg shadow-lg w-full lg:w-1/2 border border-gray-200">
-          <h2 className="text-2xl font-bold mb-8">Category Percentages</h2>
+        <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200 min-h-[250px]">
+          <h2 className="text-2xl font-bold mb-4">Category Percentages</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             {categoryStats.map(({ category, percentage }) => (
-              <div key={category} className="mb-4 text-center">
+              <div key={category} className="text-center">
                 <span
-                  className={`block text-base sm:text-lg lg:text-xl ${
+                  className={`text-lg whitespace-nowrap ${
                     CATEGORIES[category as keyof typeof CATEGORIES].color
                   } font-semibold mb-2`}
                 >
                   {category}
                 </span>
                 <span
-                  className={`block text-2xl sm:text-3xl lg:text-4xl ${
+                  className={`block text-lg sm:text-2xl md:text-3xl ${
                     CATEGORIES[category as keyof typeof CATEGORIES].color
                   } font-bold`}
                 >
@@ -230,9 +230,11 @@ function UserProfile({ params }: { params: { userId: string } }) {
             ))}
           </div>
         </div>
-        <div className="p-6 bg-white rounded-lg shadow-lg w-full lg:w-1/3 border border-gray-200">
+      </div>
+      <div className="container mx-auto px-4 mt-8 grid grid-cols-1 gap-6">
+        <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200 min-h-[250px]">
           <h2 className="text-2xl font-bold mb-4">Friends</h2>
-          <div className="text-gray-600 max-h-[50vh] lg:max-h-72 overflow-y-auto mb-4">
+          <div className="text-gray-600 max-h-[50vh] overflow-y-auto mb-4">
             {friends.map((friend: any) => renderFriendCard(friend.friend))}
           </div>
 
@@ -259,6 +261,7 @@ function UserProfile({ params }: { params: { userId: string } }) {
               Send
             </button>
           </Modal>
+
           {session?.user.user_id === parseInt(params.userId) && (
             <button
               onClick={open}

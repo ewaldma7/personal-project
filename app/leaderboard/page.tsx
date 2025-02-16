@@ -40,9 +40,11 @@ function Leaderboard() {
             user_id: session.user.user_id,
             name: session.user.name,
             location: session.user.location || "N/A",
-            score: isSameDay(userResult.data[0]?.date, getToday())
-              ? userResult.data[0]?.score
-              : null,
+            score:
+              userResult.data.length > 0 &&
+              isSameDay(userResult.data[0]?.date, getToday())
+                ? userResult.data[0]?.score
+                : null,
           };
 
           // Create entries for friends
