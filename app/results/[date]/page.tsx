@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { Text, Accordion, Title, Badge, Grid } from "@mantine/core";
+import { Text, Accordion, Badge } from "@mantine/core";
 import { CATEGORY_COLOR_MAP } from "@/constants";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -24,12 +24,28 @@ function ResultsPage({ params }: { params: { date: string } }) {
   const router = useRouter();
 
   function AccordionLabel({ guess }: { guess: Guess }) {
+    const question = questions.find(
+      (q) => q.question_id === guess.question_id
+    )?.question;
+
     return (
-      <Grid className="w-full px-2 sm:px-4">
-        <Grid.Col span={{ base: 2, sm: 1 }}>
+      <div className="w-full flex flex-col gap-2 px-2 sm:px-4">
+        <div className="flex flex-col items-center w-full pl-12">
+          <Badge
+            variant="light"
+            size="lg"
+            color={CATEGORY_COLOR_MAP.get(guess.category)}
+            className="whitespace-nowrap"
+          >
+            {guess.category}
+          </Badge>
+        </div>
+        <div className="w-full border-t border-gray-300 mt-2"></div>
+
+        <div className="flex items-center gap-4 min-w-0">
           <div
             className={`
-            w-8 h-8 flex items-center justify-center rounded-md
+            min-w-8 h-8 flex items-center justify-center rounded-md shrink-0
             ${
               guess.isCorrect
                 ? "bg-emerald-100/80 text-emerald-600"
@@ -43,26 +59,14 @@ function ResultsPage({ params }: { params: { date: string } }) {
               <IconX size={20} stroke={2} />
             )}
           </div>
-        </Grid.Col>
-        <Grid.Col span={{ base: 10, sm: 9 }}>
-          <Text size="xl" className="text-gray-800">
-            {
-              questions.find(
-                (question) => question.question_id === guess.question_id
-              )?.question
-            }
-          </Text>
-        </Grid.Col>
-        <Grid.Col span={{ base: 1, sm: 1 }}>
-          <Badge
-            variant="light"
-            size="lg"
-            color={CATEGORY_COLOR_MAP.get(guess.category)}
-          >
-            {guess.category}
-          </Badge>
-        </Grid.Col>
-      </Grid>
+
+          <div className="flex-1 min-w-0 py-1">
+            <Text size="lg" className="text-gray-800 break-words">
+              {question}
+            </Text>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -76,28 +80,26 @@ function ResultsPage({ params }: { params: { date: string } }) {
         <AccordionLabel guess={guess} />
       </Accordion.Control>
       <Accordion.Panel className="bg-gray-100/50 border-t border-gray-300">
-        <div className="p-4 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0">
-            <Text className="text-gray-700 font-medium w-32">Your Answer:</Text>
+        <div className="p-4 space-y-6">
+          <div className="flex flex-col space-y-2">
+            <Text className="text-gray-700 font-medium">Your Answer:</Text>
             <Badge
               size="lg"
               variant="light"
               color={guess.isCorrect ? "green" : "red"}
-              className="font-medium"
+              className="font-medium self-start"
             >
               {guess.guess}
             </Badge>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0">
-            <Text className="text-gray-700 font-medium w-32">
-              Correct Answer:
-            </Text>
+          <div className="flex flex-col space-y-2">
+            <Text className="text-gray-700 font-medium">Correct Answer:</Text>
             <Badge
               size="lg"
               color="green"
-              className="font-medium"
               variant="light"
+              className="font-medium self-start"
             >
               {guess.isCorrect
                 ? guess.guess
@@ -142,31 +144,33 @@ function ResultsPage({ params }: { params: { date: string } }) {
     }
   }, [userId, params.date, router]);
 
-  return loading ? (
-    <LoadingSpinner />
-  ) : guesses?.length !== 0 ? (
-    <div className="flex flex-col items-center bg-gray-100 min-h-screen py-8">
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-4xl mx-4 sm:mx-auto mb-12">
-        <Title className="text-2xl sm:text-3xl mb-6 text-gray-800 text-center">
+  if (loading) return <LoadingSpinner />;
+  if (!guesses?.length) return null;
+
+  return (
+    <div className="flex flex-col items-center bg-gray-100 min-h-screen p-4 sm:p-8">
+      <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 w-full max-w-4xl mx-auto mb-8 sm:mb-12">
+        <span className="block text-xl sm:text-2xl lg:text-3xl mb-6 text-gray-800 text-center font-bold">
           Results For: {params.date}
-        </Title>
+        </span>
+
         <Accordion chevronPosition="right" className="my-4">
           {items}
         </Accordion>
-        <Title className="text-xl sm:text-2xl mb-6 text-center text-gray-800">
+
+        <span className="block text-lg sm:text-xl lg:text-2xl mb-6 text-center text-gray-800 font-bold">
           Final Score: {String(result?.score)}
-        </Title>
-        <div className="flex justify-center mt-8">
+        </span>
+
+        <div className="flex justify-center mt-6 sm:mt-8">
           <Link href="/dashboard">
-            <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+            <button className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 sm:px-6 rounded-lg transition-colors">
               Back to Dashboard
             </button>
           </Link>
         </div>
       </div>
     </div>
-  ) : (
-    ""
   );
 }
 
