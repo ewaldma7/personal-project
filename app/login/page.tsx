@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -11,6 +11,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user.accessToken) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
 
   const logIn = async (e: React.FormEvent) => {
     e.preventDefault();
